@@ -8,15 +8,15 @@
             android:title="@string/title_section2" />
         <item android:id="@+id/nav_slideshow" android:icon="@android:drawable/ic_menu_slideshow"
             android:title="@string/title_section3" />
-        <item android:id="@+id/nav_manage" android:icon="@android:drawable/ic_menu_manage"
+        <item android:id="@+id/nav_send" android:icon="@android:drawable/ic_menu_manage"
             android:title="@string/title_section4" />
     </group>
 
     <item android:title="Communicate">
         <menu>
-            <item android:id="@+id/nav_share" android:icon="@android:drawable/ic_menu_share"
+            <item android:id="@+id/nav_manage" android:icon="@android:drawable/ic_menu_share"
                 android:title="@string/title_section5" />
-            <item android:id="@+id/nav_send" android:icon="@android:drawable/ic_menu_send"
+            <item android:id="@+id/nav_view" android:icon="@android:drawable/ic_menu_send"
                 android:title="@string/title_section6" />
         </menu>
     </item>
