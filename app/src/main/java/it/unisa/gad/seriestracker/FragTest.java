@@ -4,20 +4,13 @@ package it.unisa.gad.seriestracker;
  * Created by ludimar on 27/10/15.
  */
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -54,8 +47,8 @@ public class FragTest extends android.support.v4.app.Fragment {
         }
         context = getContext();
         try {
-            URL u = new URL(URLConstant.tvComGetNewsUrl);
-            BackgroundTask b = new BackgroundTask(XPathConstant.tvComGetLinkShow, u);
+            URL u = new URL(URLConstant.TV_COM_GET_NEWS_URL);
+            BackgroundTask b = new BackgroundTask(XPathConstant.TV_COM_GET_LINK_SHOW, u);
             b.execute();
         } catch (MalformedURLException e) {
             e.printStackTrace();
