@@ -89,12 +89,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         FragmentManager fragmentManager = getSupportFragmentManager();
 //        fragmentManager.beginTransaction().replace(R.id.container, FragTest.newInstance(id + 1)).commit();
-        Fragment test;
+    //    Fragment test;
         if (id == R.id.nav_camara) {
             // Handle the camera action
             Toast.makeText(getApplicationContext(),"SECTION 1",Toast.LENGTH_SHORT).show();
-            test =  FragTest.newInstance(id + 1);
-            fragmentManager.beginTransaction().replace(R.id.container, test).commit();
+            newFragment =  FragTest.newInstance(id + 1);
+           // fragmentManager.beginTransaction().replace(R.id.container, test).commit();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {

@@ -1,13 +1,14 @@
 package it.unisa.gad.seriestracker;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -23,6 +24,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import it.unisa.gad.seriestracker.Constant.URLConstant;
+import it.unisa.gad.seriestracker.util.NewsArrayAdapter;
 import it.unisa.gad.seriestracker.util.RSSItem;
 
 
@@ -40,12 +46,11 @@ public class News extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_news, container, false);
 
-        feedUrl = "http://www.spoilertv.com/feeds/posts/default?alt=rss";
+        feedUrl = URLConstant.SPOILERTV_COM_FEED_RSS;
 
         rssListView = (ListView) rootView.findViewById(R.id.listViewNews);
 
-        array_adapter = new ArrayAdapter<RSSItem>(rootView.getContext(),
-                R.layout.list_item, RSSItems);
+        array_adapter = new NewsArrayAdapter(rootView.getContext(),RSSItems);
         rssListView.setAdapter(array_adapter);
         rssparsehandler = new RSSParseHandler();
         rssparsehandler.execute(feedUrl);
@@ -79,8 +84,7 @@ public class News extends Fragment {
             dialog.dismiss();
             RSSItems.clear();
             RSSItems.addAll(items);
-            array_adapter = new ArrayAdapter<RSSItem>(getContext(),
-                    R.layout.list_item, RSSItems);
+            array_adapter = new NewsArrayAdapter(getContext(), RSSItems);
             rssListView.setAdapter(array_adapter);
         }
 
@@ -117,10 +121,45 @@ public class News extends Fragment {
 
                             String _title = _titleE.getFirstChild()
                                     .getNodeValue();
+
                             String _description = _descriptionE.getFirstChild()
                                     .getNodeValue();
 
-                            RSSItem rssItem = new RSSItem(_title, _description);
+
+                            // inizio parsing html description
+                            //va poi sostituita con la classe HtmlPageParser
+
+                            HtmlCleaner cleaner = new HtmlCleaner();
+                            CleanerProperties props = cleaner.getProperties();
+                            props.setAllowHtmlInsideAttributes(true);
+                            props.setAllowMultiWordAttributes(true);
+                            props.setRecognizeUnicodeChars(true);
+                            props.setOmitComments(true);
+
+                            String _img="";
+
+                            try {
+                                TagNode rootNode= cleaner.clean(_description);
+                                String pattern = "//img[@class ='headerimage']/@src";
+                                Object tag[] = rootNode.evaluateXPath(pattern);
+
+                               //se la xpath ha fallito,
+                               // prendo la prima immagine disponibile
+                                if(tag.length == 0){
+                                    pattern="//img[1]/@src";
+                                    tag = rootNode.evaluateXPath(pattern);
+                                    _img=tag[0].toString();
+                                }
+                                else
+                                    _img = tag[0].toString();
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            //fine parsing html descriprion
+
+                            RSSItem rssItem = new RSSItem(_title, _description,_img);
 
                             rssItems.add(rssItem);
 
@@ -130,9 +169,7 @@ public class News extends Fragment {
                 }
 
             } catch (Exception e) {
-                Toast.makeText(getContext(),
-                        "Errore nel reperire le news", Toast.LENGTH_LONG)
-                        .show();
+                e.printStackTrace();
 
             }
 

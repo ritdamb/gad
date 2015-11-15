@@ -6,4 +6,5 @@ package it.unisa.gad.seriestracker.Constant;
 public class URLConstant {
     public static final String TV_COM_GET_NEWS_URL = "http://www.tv.com/shows/";
     public static final String TV_COM_GET_LINK_SHOW_URL = "http://www.tv.com/shows/";
+    public static final String SPOILERTV_COM_FEED_RSS="http://www.spoilertv.com/feeds/posts/default?alt=rss";
 }
