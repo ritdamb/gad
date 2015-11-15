@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
-
+            newFragment = new Subtitles();
         } else if (id == R.id.nav_manage) {
             newFragment = new News();
         } else if (id == R.id.nav_view) {

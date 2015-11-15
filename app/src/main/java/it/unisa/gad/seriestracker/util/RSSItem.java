@@ -12,6 +12,9 @@ public class RSSItem {
         this.imageURL = imageURL;
 
     }
+    public RSSItem(String title){
+        this.title = title;
+    }
 
     public String getDescription() {
 
@@ -42,11 +45,4 @@ public class RSSItem {
 
         this.imageURL = imageURL;
     }
-
-    @Override
-    public String toString() {
-        return getTitle();
-    }
-
-
 }
