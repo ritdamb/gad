@@ -30,7 +30,7 @@ import it.unisa.gad.seriestracker.util.NewsArrayAdapter;
 import it.unisa.gad.seriestracker.util.RSSItem;
 
 
-public class Subtitles extends Fragment {
+public class FragSubtitles extends Fragment {
     private String feedUrl = "";
     private ListView rssListView = null;
     private ArrayList<RSSItem> RSSItems = new ArrayList<RSSItem>();
