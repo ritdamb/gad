@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         FragmentManager fragmentManager = getSupportFragmentManager();
 //        fragmentManager.beginTransaction().replace(R.id.container, FragTest.newInstance(id + 1)).commit();
-    //    Fragment test;
+        //    Fragment test;
         if (id == R.id.nav_tonight) {
 
             newFragment =  FragTodayShows.newInstance(id + 1);
