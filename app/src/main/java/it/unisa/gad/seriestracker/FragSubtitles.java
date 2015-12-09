@@ -1,9 +1,14 @@
 package it.unisa.gad.seriestracker;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.HtmlCleaner;
@@ -12,18 +17,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import android.support.v4.app.FragmentTransaction;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,7 +30,7 @@ import it.unisa.gad.seriestracker.util.NewsArrayAdapter;
 import it.unisa.gad.seriestracker.util.RSSItem;
 
 
-public class News extends Fragment {
+public class FragSubtitles extends Fragment {
     private String feedUrl = "";
     private ListView rssListView = null;
     private ArrayList<RSSItem> RSSItems = new ArrayList<RSSItem>();
@@ -45,35 +42,13 @@ public class News extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.fragment_news, container, false);
+        rootView = inflater.inflate(R.layout.fragment_subtitles, container, false);
 
-        feedUrl = URLConstant.SPOILERTV_COM_FEED_RSS;
+        feedUrl = URLConstant.TV_SUBTITLES_RSS_XML;
 
-        rssListView = (ListView) rootView.findViewById(R.id.listViewNews);
+        rssListView = (ListView) rootView.findViewById(R.id.listViewSubtitles);
 
-        rssListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                String title = RSSItems.get(position).getTitle();
-                String description = RSSItems.get(position).getDescription();
-                NewsDetails fragment =  NewsDetails.newInstance(title, description);
-
-                if(title.contains("POLL")){
-                   Toast.makeText(getContext(), "POLL", Toast.LENGTH_SHORT).show();
-
-                }else{
-                    //Toast.makeText(getContext(), "not POLL", Toast.LENGTH_SHORT).show();
-                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                    transaction.replace(R.id.content_frame, fragment);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                }
-            }
-        });
-
-        array_adapter = new NewsArrayAdapter(rootView.getContext(), RSSItems);
-
+        array_adapter = new NewsArrayAdapter(rootView.getContext(),RSSItems);
         rssListView.setAdapter(array_adapter);
         rssparsehandler = new RSSParseHandler();
         rssparsehandler.execute(feedUrl);
@@ -198,11 +173,6 @@ public class News extends Fragment {
 
             return rssItems;
         }
-    }
-
-    public void onClickListItem(View v){
-
-
     }
 
 }

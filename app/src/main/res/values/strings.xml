@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">SeriesTracker</string>
 
-    <string name="title_section1">Home</string>
+    <string name="title_section1">Tonight Tv Shows</string>
     <string name="title_section2">Followed</string>
     <string name="title_section3">Last Subtitles</string>
     <string name="title_section4">News</string>
-    <string name="title_section5">Settings</string>
+    <string name="title_section5">Show Research</string>
     <string name="title_section6">Credits</string>
 
 

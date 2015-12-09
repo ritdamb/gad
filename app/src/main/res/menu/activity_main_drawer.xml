@@ -2,23 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_camara" android:icon="@android:drawable/ic_menu_camera"
+        <item android:id="@+id/nav_tonight" android:icon="@android:drawable/ic_menu_today"
             android:title="@string/title_section1" />
-        <item android:id="@+id/nav_gallery" android:icon="@android:drawable/ic_menu_gallery"
-            android:title="@string/title_section2" />
-        <item android:id="@+id/nav_slideshow" android:icon="@android:drawable/ic_menu_slideshow"
-            android:title="@string/title_section3" />
-        <item android:id="@+id/nav_send" android:icon="@android:drawable/ic_menu_manage"
-            android:title="@string/title_section4" />
-    </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item android:id="@+id/nav_manage" android:icon="@android:drawable/ic_menu_share"
+        <item android:id="@+id/nav_followed" android:icon="@android:drawable/ic_menu_view"
+            android:title="@string/title_section2" />
+
+        <item android:id="@+id/nav_lastSubs" android:icon="@android:drawable/ic_popup_reminder"
+            android:title="@string/title_section3" />
+
+        <item android:id="@+id/nav_news" android:icon="@android:drawable/ic_popup_reminder"
+            android:title="@string/title_section4" />
+
+        <item android:id="@+id/nav_search" android:icon="@android:drawable/ic_menu_search"
                 android:title="@string/title_section5" />
-            <item android:id="@+id/nav_view" android:icon="@android:drawable/ic_menu_send"
+
+        <item android:id="@+id/nav_view" android:icon="@android:drawable/ic_menu_send"
                 android:title="@string/title_section6" />
-        </menu>
-    </item>
+
+    </group>
 
 </menu>

@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import javax.xml.xpath.XPath;
 
 import org.htmlcleaner.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 interface HtmlParserInterface {
     public void perform();
 
-    public ArrayList<Object> getElements();
+    public NodeList getElements();
 
     public void printElements();
 
@@ -24,4 +26,6 @@ interface HtmlParserInterface {
     public URL getUrl();
 
     public TagNode getDocumentRootNode();
+
+    public Document getDomDocument();
 }

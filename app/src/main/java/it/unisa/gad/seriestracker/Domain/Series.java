@@ -2,6 +2,7 @@ package it.unisa.gad.seriestracker.Domain;
 
 import android.graphics.Bitmap;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -9,16 +10,31 @@ import java.util.ArrayList;
  */
 public class Series {
 
+
     private String name;
+    private String episodeTitle;
     private String producer;
     private String description;
     private String genere;
-    private double rating;
+    private String rating;
     private int startYear;
     private Bitmap imageSmall;
     private Bitmap imageBig;
     private int endYear; //0 or null if the series is still running
+    private boolean isTodaySeries;
+    private String startH;
+    private String imageURL;
     private ArrayList<Person> cast;
+    private String firstAired;
+
+
+    public String getFirstAired() {
+        return firstAired;
+    }
+
+    public void setFirstAired(String firstAired) {
+        this.firstAired = firstAired;
+    }
 
     public String getName() {
         return name;
@@ -52,11 +68,11 @@ public class Series {
         this.genere = genere;
     }
 
-    public double getRating() {
+    public String getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 
@@ -98,5 +114,37 @@ public class Series {
 
     public void setCast(ArrayList<Person> cast) {
         this.cast = cast;
+    }
+
+    public String getStartH() {
+        return startH;
+    }
+
+    public void setStartH(String startH) {
+        this.startH = startH;
+    }
+
+    public boolean isTodaySeries() {
+        return isTodaySeries;
+    }
+
+    public void setIsTodaySeries(boolean isTodaySeries) {
+        this.isTodaySeries = isTodaySeries;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    public String getEpisodeTitle() {
+        return episodeTitle;
+    }
+
+    public void setEpisodeTitle(String episodeTitle) {
+        this.episodeTitle = episodeTitle;
     }
 }
