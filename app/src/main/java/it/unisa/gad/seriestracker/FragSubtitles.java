@@ -53,7 +53,7 @@ public class FragSubtitles extends Fragment {
             feedUrl=URLConstant.TV_SUBTITLES_RSS_XML_ITALIAN;
         rssListView = (ListView) rootView.findViewById(R.id.listViewSubtitles);
 
-        array_adapter = new NewsArrayAdapter(rootView.getContext(), RSSItems);
+        array_adapter = new NewsArrayAdapter(rootView.getContext(),RSSItems);
         rssListView.setAdapter(array_adapter);
         rssparsehandler = new RSSParseHandler();
         rssparsehandler.execute(feedUrl);
@@ -61,7 +61,6 @@ public class FragSubtitles extends Fragment {
         return rootView;
 
     }
-
 
     @Override
     public void onPause() {
@@ -140,20 +139,21 @@ public class FragSubtitles extends Fragment {
                             props.setRecognizeUnicodeChars(true);
                             props.setOmitComments(true);
 
-                            String _img = "";
+                            String _img="";
 
                             try {
-                                TagNode rootNode = cleaner.clean(_description);
+                                TagNode rootNode= cleaner.clean(_description);
                                 String pattern = "//img[@class ='headerimage']/@src";
                                 Object tag[] = rootNode.evaluateXPath(pattern);
 
-                                //se la xpath ha fallito,
-                                // prendo la prima immagine disponibile
-                                if (tag.length == 0) {
-                                    pattern = "//img[1]/@src";
+                               //se la xpath ha fallito,
+                               // prendo la prima immagine disponibile
+                                if(tag.length == 0){
+                                    pattern="//img[1]/@src";
                                     tag = rootNode.evaluateXPath(pattern);
-                                    _img = tag[0].toString();
-                                } else
+                                    _img=tag[0].toString();
+                                }
+                                else
                                     _img = tag[0].toString();
 
                             } catch (Exception e) {
@@ -162,7 +162,7 @@ public class FragSubtitles extends Fragment {
 
                             //fine parsing html descriprion
 
-                            RSSItem rssItem = new RSSItem(_title, _description, _img);
+                            RSSItem rssItem = new RSSItem(_title, _description,_img);
 
                             rssItems.add(rssItem);
 
@@ -183,7 +183,7 @@ public class FragSubtitles extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-    }
+}
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

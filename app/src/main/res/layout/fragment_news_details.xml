@@ -1,6 +1,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="it.unisa.gad.seriestracker.NewsDetails">
+    android:layout_height="match_parent" tools:context="it.unisa.gad.seriestracker.FragNewsDetails">
 
 
     <LinearLayout
@@ -20,7 +20,8 @@
             android:layout_height="wrap_content"
             android:text="New Text"
             android:id="@+id/textViewDetailsDescription"
-            android:layout_gravity="left|center_vertical" />
+            android:layout_gravity="left|center_vertical"
+            android:scrollbars = "vertical"/>
     </LinearLayout>
 
 </FrameLayout>

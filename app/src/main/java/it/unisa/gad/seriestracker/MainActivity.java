@@ -94,14 +94,14 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         Fragment newFragment = new FragNews();
         int id = item.getItemId();
-        FragmentManager fragmentManager = getSupportFragmentManager();
+
 //        fragmentManager.beginTransaction().replace(R.id.container, FragTest.newInstance(id + 1)).commit();
         //    Fragment test;
         if (id == R.id.nav_tonight) {
 
             newFragment =  FragTodayShows.newInstance(id + 1);
         } else if (id == R.id.nav_followed) {
-
+            newFragment = new FragFollowed();
         } else if (id == R.id.nav_lastSubs) {
             newFragment = new FragSubtitles();
         } else if (id == R.id.nav_news) {
