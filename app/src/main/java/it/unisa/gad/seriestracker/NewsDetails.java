@@ -2,20 +2,20 @@ package it.unisa.gad.seriestracker;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * Use the {@link FragNewsDetails#newInstance} factory method to
+ * Use the {@link NewsDetails#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragNewsDetails extends Fragment {
+public class NewsDetails extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -34,11 +34,11 @@ public class FragNewsDetails extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FragNewsDetails.
+     * @return A new instance of fragment NewsDetails.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragNewsDetails newInstance(String param1, String param2) {
-        FragNewsDetails fragment = new FragNewsDetails();
+    public static NewsDetails newInstance(String param1, String param2) {
+        NewsDetails fragment = new NewsDetails();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -46,7 +46,7 @@ public class FragNewsDetails extends Fragment {
         return fragment;
     }
 
-    public FragNewsDetails() {
+    public NewsDetails() {
         // Required empty public constructor
     }
 
@@ -70,7 +70,7 @@ public class FragNewsDetails extends Fragment {
         TextView tvDescription = (TextView) rootView.findViewById(R.id.textViewDetailsDescription);
 
         tvTitle.setText(title);
-        tvDescription.setText(Html.fromHtml(description));
+        tvDescription.setText(description);
 
 
         return rootView;

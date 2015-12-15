@@ -4,7 +4,11 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -31,7 +35,7 @@ import it.unisa.gad.seriestracker.util.RSSItem;
 
 
 public class FragSubtitles extends Fragment {
-    private String feedUrl = "";
+    String feedUrl = "";
     private ListView rssListView = null;
     private ArrayList<RSSItem> RSSItems = new ArrayList<RSSItem>();
     private ArrayAdapter<RSSItem> array_adapter = null;
@@ -44,11 +48,12 @@ public class FragSubtitles extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_subtitles, container, false);
 
-        feedUrl = URLConstant.TV_SUBTITLES_RSS_XML;
-
+        //di default al primo caricamento subs in italiano
+        if(feedUrl.equals(""))
+            feedUrl=URLConstant.TV_SUBTITLES_RSS_XML_ITALIAN;
         rssListView = (ListView) rootView.findViewById(R.id.listViewSubtitles);
 
-        array_adapter = new NewsArrayAdapter(rootView.getContext(),RSSItems);
+        array_adapter = new NewsArrayAdapter(rootView.getContext(), RSSItems);
         rssListView.setAdapter(array_adapter);
         rssparsehandler = new RSSParseHandler();
         rssparsehandler.execute(feedUrl);
@@ -56,6 +61,7 @@ public class FragSubtitles extends Fragment {
         return rootView;
 
     }
+
 
     @Override
     public void onPause() {
@@ -134,21 +140,20 @@ public class FragSubtitles extends Fragment {
                             props.setRecognizeUnicodeChars(true);
                             props.setOmitComments(true);
 
-                            String _img="";
+                            String _img = "";
 
                             try {
-                                TagNode rootNode= cleaner.clean(_description);
+                                TagNode rootNode = cleaner.clean(_description);
                                 String pattern = "//img[@class ='headerimage']/@src";
                                 Object tag[] = rootNode.evaluateXPath(pattern);
 
-                               //se la xpath ha fallito,
-                               // prendo la prima immagine disponibile
-                                if(tag.length == 0){
-                                    pattern="//img[1]/@src";
+                                //se la xpath ha fallito,
+                                // prendo la prima immagine disponibile
+                                if (tag.length == 0) {
+                                    pattern = "//img[1]/@src";
                                     tag = rootNode.evaluateXPath(pattern);
-                                    _img=tag[0].toString();
-                                }
-                                else
+                                    _img = tag[0].toString();
+                                } else
                                     _img = tag[0].toString();
 
                             } catch (Exception e) {
@@ -157,7 +162,7 @@ public class FragSubtitles extends Fragment {
 
                             //fine parsing html descriprion
 
-                            RSSItem rssItem = new RSSItem(_title, _description,_img);
+                            RSSItem rssItem = new RSSItem(_title, _description, _img);
 
                             rssItems.add(rssItem);
 
@@ -175,4 +180,41 @@ public class FragSubtitles extends Fragment {
         }
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menusubtitles, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    // in base ai subs scelti dal menu refresh del fragment
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.france:
+                feedUrl = URLConstant.TV_SUBTITLES_RSS_XML_FRANCE;
+                refreshFragment();
+                break;
+            case R.id.spain:
+                feedUrl = URLConstant.TV_SUBTITLES_RSS_XML_SPAIN;
+                refreshFragment();
+                break;
+            case R.id.italian:
+                feedUrl=URLConstant.TV_SUBTITLES_RSS_XML_ITALIAN;
+                refreshFragment();
+                break;
+
+        }
+        return true;
+    }
+    //metodo invocato dopo aver selezionato una scelta dal menu per ricaricare il fragment
+    private void refreshFragment() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.detach(this).attach(this).commit();
+    }
 }

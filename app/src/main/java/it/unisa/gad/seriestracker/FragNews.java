@@ -57,7 +57,7 @@ public class FragNews extends Fragment {
 
                 String title = RSSItems.get(position).getTitle();
                 String description = RSSItems.get(position).getDescription();
-                FragNewsDetails fragment =  FragNewsDetails.newInstance(title, description);
+                NewsDetails fragment =  NewsDetails.newInstance(title, description);
 
                 if(title.contains("POLL")){
                    Toast.makeText(getContext(), "POLL", Toast.LENGTH_SHORT).show();
