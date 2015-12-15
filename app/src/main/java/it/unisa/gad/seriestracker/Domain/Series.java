@@ -27,6 +27,8 @@ public class Series {
     private ArrayList<Person> cast;
     private String firstAired;
 
+    public static final String NAME_TELEFILM="name_Telefilm";
+
 
     public String getFirstAired() {
         return firstAired;
