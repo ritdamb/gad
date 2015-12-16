@@ -171,17 +171,23 @@ public  class ApplicationVariables {
             Element series = doc.createElement("series");
             rootElement.appendChild(series);
 
+
+
             // name elements
             Element name = doc.createElement("name");
             name.appendChild(doc.createTextNode("Gotham"));
             series.appendChild(name);
 
-            // name elements
+            // genre elements
             Element genre = doc.createElement("genre");
-            genre.appendChild(doc.createTextNode("Thriller"));
-            genre.appendChild(doc.createTextNode("Action"));
-            genre.appendChild(doc.createTextNode("Drama"));
+            genre.appendChild(doc.createTextNode("Thriller,Action,Drama"));
             series.appendChild(genre);
+
+            //description Element
+            Element description = doc.createElement("description");
+            description.appendChild(doc.createTextNode("Description TEXT"));
+            series.appendChild(description);
+
 
 
 

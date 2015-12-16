@@ -44,7 +44,7 @@ public class DetailsActivity extends Activity {
 
 		if( ApplicationVariables.getInstance().getPreferiteSeries(getApplicationContext()) == null) {
 			ArrayList<Series> preferiteSeries = new ArrayList<Series>();
-			ApplicationVariables.getInstance().createPreferiteFile(getApplicationContext(),preferiteSeries);
+			ApplicationVariables.getInstance().createPreferiteFile(getApplicationContext(), preferiteSeries);
 			//Toast.makeText(getApplicationContext(),"PREFERITE SERIES IS NULL",Toast.LENGTH_LONG).show();
 		} else {
 			//Toast.makeText(getApplicationContext(),"PREFERITE SERIES IS NOT NULL",Toast.LENGTH_LONG).show();
@@ -72,7 +72,7 @@ public class DetailsActivity extends Activity {
 					Series temp = new Series();
 					temp.setName(nameTelefilm);
 					preferiteList.add(temp);
-					ApplicationVariables.getInstance().createPreferiteFile(getApplicationContext(),preferiteList);
+					ApplicationVariables.getInstance().createPreferiteFile(getApplicationContext(), preferiteList);
 
 					Toast.makeText(DetailsActivity.this,
 							nameTelefilm + "added to your preferite list", Toast.LENGTH_SHORT).show();
@@ -85,6 +85,7 @@ public class DetailsActivity extends Activity {
 							preferiteList.remove(i);
 							Toast.makeText(DetailsActivity.this,nameTelefilm + " removed from preferite list", Toast.LENGTH_SHORT).show();
 							button.setText("Follow");
+							ApplicationVariables.getInstance().createPreferiteFile(getApplicationContext(), preferiteList);
 							return;
 						}
 					}
