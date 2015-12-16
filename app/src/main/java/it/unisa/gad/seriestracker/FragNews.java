@@ -1,6 +1,5 @@
 package it.unisa.gad.seriestracker;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -12,27 +11,18 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -40,13 +30,12 @@ import javax.xml.xpath.XPathFactory;
 
 import it.unisa.gad.seriestracker.Constant.URLConstant;
 import it.unisa.gad.seriestracker.Constant.XPathConstant;
-import it.unisa.gad.seriestracker.Domain.Series;
 import it.unisa.gad.seriestracker.util.HtmlPageParser;
 import it.unisa.gad.seriestracker.util.NewsArrayAdapter;
 import it.unisa.gad.seriestracker.util.RSSItem;
 
 
-public class FragmentNews extends Fragment implements AbsListView.OnItemClickListener {
+public class FragNews extends Fragment implements AbsListView.OnItemClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -64,8 +53,8 @@ public class FragmentNews extends Fragment implements AbsListView.OnItemClickLis
     private XPath xPathObj;
 
     // TODO: Rename and change types of parameters
-    public static FragmentNews newInstance(String param1, String param2) {
-        FragmentNews fragment = new FragmentNews();
+    public static FragNews newInstance(String param1, String param2) {
+        FragNews fragment = new FragNews();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -77,7 +66,7 @@ public class FragmentNews extends Fragment implements AbsListView.OnItemClickLis
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public FragmentNews() {
+    public FragNews() {
     }
 
     @Override
