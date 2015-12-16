@@ -4,6 +4,7 @@ package it.unisa.gad.seriestracker.Domain;
  * Created by ludimar on 09/11/15.
  */
 public class Person {
+
     private String name;
     private String surname;
     private String role;
@@ -31,4 +32,5 @@ public class Person {
     public void setRole(String role) {
         this.role = role;
     }
+
 }

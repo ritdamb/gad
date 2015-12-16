@@ -2,13 +2,14 @@ package it.unisa.gad.seriestracker.Domain;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 
 /**
  * Created by ludimar on 09/11/15.
  */
-public class Series {
+public class Series implements Serializable {
 
 
     private String name;

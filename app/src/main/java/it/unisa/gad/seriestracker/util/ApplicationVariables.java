@@ -14,9 +14,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StreamCorruptedException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import java.io.File;
@@ -76,6 +78,62 @@ public  class ApplicationVariables {
         return todaySeries;
     }
 
+    public ArrayList<Series> getPreferiteSeries(Context context) {
+        try {
+            FileInputStream fileInputStream = context.openFileInput("preferiteSeries.xml");
+            if(fileInputStream == null) return null;
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            ArrayList<Series> series = (ArrayList<Series>) objectInputStream.readObject();
+            return series;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (StreamCorruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean savePreferiteSeries(Context context,Series series) {
+        ArrayList<Series> preferiteSeries = getPreferiteSeries(context);
+        if(preferiteSeries == null) return false;
+        else {
+            preferiteSeries.add(series);
+            return createPreferiteFile(context,preferiteSeries);
+        }
+    }
+
+    public boolean checkPreferiteSeries(Context context, Series series){
+        ArrayList<Series> preferiteSeries = getPreferiteSeries(context);
+        if(preferiteSeries == null) return false;
+        else {
+            for(int i = 0 ; i < preferiteSeries.size(); i++ ) {
+                if(preferiteSeries.get(i).getName().equals(series.getName())) return true;
+            }
+            return false;
+        }
+    }
+
+    public boolean createPreferiteFile(Context context, ArrayList<Series> seriesList) {
+        try{
+            File preferiteLists = new File(context.getFilesDir(), "preferiteSeries.xml");
+            FileOutputStream outputStream;
+            outputStream = context.openFileOutput("preferiteSeries.xml",Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(outputStream);
+            os.writeObject(seriesList);
+            return true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean checkDataWarehouse(Context context){
         try{
             FileInputStream fileInputStream = context.openFileInput("seriesList.xml");
@@ -113,17 +171,23 @@ public  class ApplicationVariables {
             Element series = doc.createElement("series");
             rootElement.appendChild(series);
 
+
+
             // name elements
             Element name = doc.createElement("name");
             name.appendChild(doc.createTextNode("Gotham"));
             series.appendChild(name);
 
-            // name elements
+            // genre elements
             Element genre = doc.createElement("genre");
-            genre.appendChild(doc.createTextNode("Thriller"));
-            genre.appendChild(doc.createTextNode("Action"));
-            genre.appendChild(doc.createTextNode("Drama"));
+            genre.appendChild(doc.createTextNode("Thriller,Action,Drama"));
             series.appendChild(genre);
+
+            //description Element
+            Element description = doc.createElement("description");
+            description.appendChild(doc.createTextNode("Description TEXT"));
+            series.appendChild(description);
+
 
 
 

@@ -24,6 +24,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import it.unisa.gad.seriestracker.Domain.Series;
+import it.unisa.gad.seriestracker.util.ApplicationVariables;
 
 /**
  * Created by Rita on 13/12/2015.
@@ -39,84 +40,37 @@ public class FragFollowed extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_followed, container, false);
-        ListView listView = (ListView) rootView
-                .findViewById(R.id.listViewSeguiti);
-        ArrayList<String> arr = new ArrayList<String>();
+        ListView listView = (ListView) rootView.findViewById(R.id.listViewSeguiti);
+        ApplicationVariables appvar= ApplicationVariables.getInstance();
+        ArrayList<Series> resultSeries = appvar.getPreferiteSeries(rootView.getContext());
 
-        File fileDir = getDocumentStorageDir("telefilm");
-        if (isExternalStorageReadable()) {
+        //per ora estrapolo solo i title
+        //va modificato
 
-            arr = loadFileInArray(new File(fileDir, "telefilm.txt"));
+        ArrayList<String> resultTitle = new ArrayList<String>();
+
+        if(resultSeries != null)
+            for (Series s: resultSeries)
+                resultTitle.add(s.getName());
 
 
-            if (arr.size() == 0)
-                arr.add("");
+        ArrayAdapter<String> ad = new ArrayAdapter<String>(getContext(),R.layout.text_view,resultTitle);
 
-            ArrayAdapter<String> ad = new ArrayAdapter<String>(
-                    rootView.getContext(), R.layout.text_view, arr);
-            listView.setAdapter(ad);
-        } else {
-            Toast.makeText(rootView.getContext(),
-                    "Impossibile leggere la sdcard", Toast.LENGTH_LONG).show();
-        }
+        listView.setAdapter(ad);
+
 
        listView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                String name = (String) parent.getItemAtPosition(position);
-                Intent intent = new Intent(getView().getContext(), DetailsActivity.class);
-                intent.putExtra(Series.NAME_TELEFILM, name);
-                startActivity(intent);
-            }
+           @Override
+           public void onItemClick(AdapterView<?> parent, View view,
+                                   int position, long id) {
+               String name = (String) parent.getItemAtPosition(position);
+               Intent intent = new Intent(getView().getContext(), DetailsActivity.class);
+               intent.putExtra(Series.NAME_TELEFILM, name);
+               startActivity(intent);
+           }
         });
         return rootView;
     }
 
-    private ArrayList<String> loadFileInArray(File file) {
 
-        ArrayList<String> arr = new ArrayList<String>();
-        FileReader filereader = null;
-
-        try {
-            filereader = new FileReader(file);
-        } catch (FileNotFoundException e1) {
-            arr.add("");
-            return arr;
-        }
-
-        BufferedReader buff = new BufferedReader(filereader);
-        String line = "";
-
-        try {
-            while ((line = buff.readLine()) != null) {
-                arr.add(line);
-            }
-            buff.close();
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return arr;
-    }
-
-    public File getDocumentStorageDir(String documentName) {
-        // Get the directory for the user's public pictures directory.
-        File file = new File(
-                Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                documentName);
-        return file;
-    }
-
-    /* Checks if external storage is available to at least read */
-    public boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)
-                || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
-    }
 }
