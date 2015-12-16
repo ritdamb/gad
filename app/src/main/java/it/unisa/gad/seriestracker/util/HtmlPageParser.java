@@ -53,28 +53,28 @@ public class HtmlPageParser implements HtmlParserInterface {
     @Override
     public void perform() {
         HtmlCleaner cleaner = new HtmlCleaner();
-        CleanerProperties props = cleaner.getProperties();
-        props.setAllowHtmlInsideAttributes(true);
-        props.setAllowMultiWordAttributes(true);
-        props.setRecognizeUnicodeChars(true);
-        props.setOmitComments(true);
-        try {
-            URLConnection conn = url.openConnection();
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            rootNode = cleaner.clean(url);
-            doc = new DomSerializer(new CleanerProperties()).createDOM(rootNode);
-            xPathObj = XPathFactory.newInstance().newXPath();
-            nodeList  = (NodeList) xPathObj.compile(xpathExpression).evaluate(doc, XPathConstants.NODESET);
+                CleanerProperties props = cleaner.getProperties();
+                props.setAllowHtmlInsideAttributes(true);
+                props.setAllowMultiWordAttributes(true);
+                props.setRecognizeUnicodeChars(true);
+                props.setOmitComments(true);
+                try {
+                    URLConnection conn = url.openConnection();
+                    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+                    rootNode = cleaner.clean(url);
+                    doc = new DomSerializer(new CleanerProperties()).createDOM(rootNode);
+                    xPathObj = XPathFactory.newInstance().newXPath();
+                    nodeList  = (NodeList) xPathObj.compile(xpathExpression).evaluate(doc, XPathConstants.NODESET);
 
-            ///// Crezione di un documento xml con i nodi selezionati dall'xpath principale.
-            resultXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            Element root = resultXmlDocument.createElement("root");
-            resultXmlDocument.appendChild(root);
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                Node copyNode = resultXmlDocument.importNode(node, true);
-                root.appendChild(copyNode);
+                    ///// Crezione di un documento xml con i nodi selezionati dall'xpath principale.
+                    resultXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+                    Element root = resultXmlDocument.createElement("root");
+                    resultXmlDocument.appendChild(root);
+                    for (int i = 0; i < nodeList.getLength(); i++) {
+                        Node node = nodeList.item(i);
+                        Node copyNode = resultXmlDocument.importNode(node, true);
+                        root.appendChild(copyNode);
             }
 
             //printDocument(resultXmlDocument,System.out);
