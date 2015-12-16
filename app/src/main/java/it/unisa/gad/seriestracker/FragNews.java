@@ -143,7 +143,6 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
 
             Element element = doc.getDocumentElement();
 
-            NodeList nodeList = element.getElementsByTagName("li");
             xPathObj = XPathFactory.newInstance().newXPath();
             try {
                 for(int i = 1 ; i < doc.getElementsByTagName("li").getLength(); i ++ ) {
@@ -178,8 +177,8 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
                     if(urlDescription == null){
                         item.setUrlDescription("");
                     }else{
-                        item.setUrlDescription(urlDescription.getTextContent());
-                        System.out.println("URLDESC: "+item.getUrlDescription());
+                        item.setUrlDescription("http://www.tv.com"+urlDescription.getTextContent());
+                        System.out.println("URLDESC: " + item.getUrlDescription());
                     }
 
                     rssItems.add(item);
@@ -197,19 +196,14 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
         String title = RSSItems.get(position).getTitle();
-        String description = RSSItems.get(position).getDescription();
-        FragNewsDetails fragment = FragNewsDetails.newInstance(title, description);
+        String urldescription = RSSItems.get(position).getUrlDescription();
+        FragNewsDetails fragment = FragNewsDetails.newInstance(title, urldescription);
 
-        if (title.contains("POLL")) {
-            Toast.makeText(getContext(), "POLL", Toast.LENGTH_SHORT).show();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_frame, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
 
-        } else {
-            //Toast.makeText(getContext(), "not POLL", Toast.LENGTH_SHORT).show();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.content_frame, fragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-        }
 
 
     }
