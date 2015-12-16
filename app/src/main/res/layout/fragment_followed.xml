@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Qui verranno inserite le serie seguite"
+        android:text="Followed Series"
         android:textSize="20dp"
         android:layout_marginBottom="10dp"/>
 

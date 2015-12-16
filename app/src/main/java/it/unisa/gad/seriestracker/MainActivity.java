@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        Fragment newFragment = new FragmentNews();
+        Fragment newFragment = new FragNews();
         int id = item.getItemId();
 
 //        fragmentManager.beginTransaction().replace(R.id.container, FragTest.newInstance(id + 1)).commit();
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_lastSubs) {
             newFragment = new FragSubtitles();
         } else if (id == R.id.nav_news) {
-            newFragment = new FragmentNews();
+            newFragment = new FragNews();
         } else if (id == R.id.nav_search) {
             newFragment = new FragSearch();
 
