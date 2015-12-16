@@ -5,7 +5,11 @@ public class RSSItem {
     private String title;
     private String description;
     private String imageURL;
+    private String urlDescription;
 
+    public RSSItem(){
+
+    }
     public RSSItem(String title, String description, String imageURL) {
         this.title = title;
         this.description = description;
@@ -45,4 +49,13 @@ public class RSSItem {
 
         this.imageURL = imageURL;
     }
+
+    public String getUrlDescription() {
+        return urlDescription;
+    }
+
+    public void setUrlDescription(String urlDescription) {
+        this.urlDescription = urlDescription;
+    }
+
 }

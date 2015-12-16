@@ -3,6 +3,7 @@ package it.unisa.gad.seriestracker;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import org.xml.sax.SAXException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -101,6 +103,11 @@ public class FragSearch extends android.support.v4.app.Fragment {
                 String nameTele = serie.getName();
                 Intent intent = new Intent(getView().getContext(), DetailsActivity.class);
                 intent.putExtra(Series.NAME_TELEFILM, nameTele);
+                ByteArrayOutputStream bs = new ByteArrayOutputStream();
+                Bitmap b = serie.getImageBig();
+                b.compress(Bitmap.CompressFormat.PNG,50,bs);
+                intent.putExtra("img",bs.toByteArray());
+                intent.putExtra("description",serie.getDescription());
                 startActivity(intent);
             }
         });
@@ -216,7 +223,6 @@ public class FragSearch extends android.support.v4.app.Fragment {
                         }
                     }
                     seriesFound.add(temp);
-
                 }
 
                 System.out.println(seriesFound.size() + " series found");
