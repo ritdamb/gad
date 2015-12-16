@@ -177,21 +177,18 @@ public class FragTodayShows extends android.support.v4.app.Fragment {
                         temp.setName("");
                     }else {
                         temp.setName(name.getTextContent());
-                        System.out.println("NAME: "+temp.getName());
                     }
                     Node  title = (Node) xPathObj.compile("//li["+i+"]/div[3]/h4").evaluate(doc, XPathConstants.NODE);
                     if(title == null) {
                         temp.setEpisodeTitle("");
                     }else {
                         temp.setEpisodeTitle((title.getTextContent().trim()).replace("\n", "").replace("\r", ""));
-                        System.out.println("TITLE: " + (temp.getEpisodeTitle().trim()).replace("\n", "").replace("\r", ""));
                     }
                     Node  start = (Node) xPathObj.compile("//li["+i+"]/div[3]/p[@class='listings-program-airing-info']").evaluate(doc, XPathConstants.NODE);
                     if(start == null) {
                         temp.setStartH("");
                     }else {
                         temp.setStartH(start.getTextContent());
-                        System.out.println("START TIME: "+temp.getStartH());
                     }
                     String url = (String) xPathObj.compile("//li["+i+"]/div[1]/a/img/@src").evaluate(doc, XPathConstants.STRING);
                     if(url == null ) {
@@ -199,8 +196,6 @@ public class FragTodayShows extends android.support.v4.app.Fragment {
                     } else {
                         temp.setImageURL(url);
                     }
-                    System.out.println(url);
-                    System.out.println("############");
                     seriesList.add(temp);
                 }
 

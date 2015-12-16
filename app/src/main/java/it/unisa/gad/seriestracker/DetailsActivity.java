@@ -67,9 +67,11 @@ public class DetailsActivity extends Activity {
 
 		arg = getIntent().getExtras();
 		nameTelefilm = arg.getString(Series.NAME_TELEFILM);
-		Bitmap b = BitmapFactory.decodeByteArray(arg.getByteArray("img"),0,arg.getByteArray("img").length);
+		if(arg.getByteArray("img") != null) {
+			Bitmap b = BitmapFactory.decodeByteArray(arg.getByteArray("img"),0,arg.getByteArray("img").length);
+			seriesBanner.setImageBitmap(b);
+		}
 
-		seriesBanner.setImageBitmap(b);
 		tvTitle.setText(nameTelefilm);
 
 
@@ -84,7 +86,7 @@ public class DetailsActivity extends Activity {
 			//Toast.makeText(getApplicationContext(),"PREFERITE SERIES IS NOT NULL",Toast.LENGTH_LONG).show();
 			Series temp = new Series();
 			temp.setName(nameTelefilm);
-			if(ApplicationVariables.getInstance().checkPreferiteSeries(getApplicationContext(),temp) == false) {
+			if(ApplicationVariables.getInstance().checkPreferiteSeries(getApplicationContext(), temp) == false) {
 				follow.setText("Follow");
 			} else follow.setText("Don't Follow");
 
