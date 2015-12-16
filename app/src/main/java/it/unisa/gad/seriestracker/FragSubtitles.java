@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.HtmlCleaner;
@@ -30,8 +31,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import it.unisa.gad.seriestracker.Constant.URLConstant;
-import it.unisa.gad.seriestracker.util.NewsArrayAdapter;
 import it.unisa.gad.seriestracker.util.RSSItem;
+import it.unisa.gad.seriestracker.util.SubtitlesArrayAdapter;
 
 
 public class FragSubtitles extends Fragment {
@@ -48,16 +49,17 @@ public class FragSubtitles extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_subtitles, container, false);
 
-        //di default al primo caricamento subs in italiano
-        if(feedUrl.equals(""))
-            feedUrl=URLConstant.TV_SUBTITLES_RSS_XML_ITALIAN;
-        rssListView = (ListView) rootView.findViewById(R.id.listViewSubtitles);
+        //di default al primo caricamento subs in francese
+        if (feedUrl.equals("")) {
+            feedUrl+=URLConstant.TV_SUBTITLES_RSS_XML+"rssfr.xml";;
+        }
 
-        array_adapter = new NewsArrayAdapter(rootView.getContext(),RSSItems);
-        rssListView.setAdapter(array_adapter);
         rssparsehandler = new RSSParseHandler();
         rssparsehandler.execute(feedUrl);
+        rssListView = (ListView) rootView.findViewById(R.id.listViewSubtitles);
 
+        array_adapter = new SubtitlesArrayAdapter(rootView.getContext(), RSSItems);
+        rssListView.setAdapter(array_adapter);
         return rootView;
 
     }
@@ -87,7 +89,7 @@ public class FragSubtitles extends Fragment {
             dialog.dismiss();
             RSSItems.clear();
             RSSItems.addAll(items);
-            array_adapter = new NewsArrayAdapter(getContext(), RSSItems);
+            array_adapter = new SubtitlesArrayAdapter(getContext(), RSSItems);
             rssListView.setAdapter(array_adapter);
         }
 
@@ -197,15 +199,18 @@ public class FragSubtitles extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.france:
-                feedUrl = URLConstant.TV_SUBTITLES_RSS_XML_FRANCE;
+                feedUrl=feedUrl.substring(0,feedUrl.length()-9);
+                feedUrl +="rssfr.xml";
                 refreshFragment();
                 break;
             case R.id.spain:
-                feedUrl = URLConstant.TV_SUBTITLES_RSS_XML_SPAIN;
+                feedUrl=feedUrl.substring(0,feedUrl.length()-9);
+                feedUrl +="rsses.xml";
                 refreshFragment();
                 break;
             case R.id.italian:
-                feedUrl=URLConstant.TV_SUBTITLES_RSS_XML_ITALIAN;
+                feedUrl=feedUrl.substring(0,feedUrl.length()-9);
+                feedUrl +="rssit.xml";
                 refreshFragment();
                 break;
 

@@ -12,7 +12,5 @@ public class URLConstant {
 
     public static final String TV_GUIDE_TRENDING_TONIGHT ="http://www.tvguide.com/trending-tonight/";
 
-    public static final String TV_SUBTITLES_RSS_XML_FRANCE="http://www.tvsubtitles.net/rssfr.xml";
-    public static final String TV_SUBTITLES_RSS_XML_SPAIN="http://www.tvsubtitles.net/rsses.xml";
-    public static final String TV_SUBTITLES_RSS_XML_ITALIAN="http://www.tvsubtitles.net/rssit.xml";
+    public static final String TV_SUBTITLES_RSS_XML="http://www.tvsubtitles.net/";
 }
