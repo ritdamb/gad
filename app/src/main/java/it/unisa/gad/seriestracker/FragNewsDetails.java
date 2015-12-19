@@ -72,6 +72,7 @@ public class FragNewsDetails extends Fragment {
     private View rootView;
     private TextView tvDescription,tvTitle;
     private XPath xPathObj;
+    private boolean imageChecker;
 
 
 
@@ -111,6 +112,8 @@ public class FragNewsDetails extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_news_details, container, false);
+
+        imageChecker=false;
 
         tvTitle = (TextView) rootView.findViewById(R.id.textViewDetailsTitle);
         tvDescription = (TextView) rootView.findViewById(R.id.textViewDetailsDescription);
@@ -206,9 +209,12 @@ public class FragNewsDetails extends Fragment {
 
         public Drawable getDrawable(String source) {
 
-            AQuery aq = new AQuery(rootView);
-            aq.id(R.id.imageView).image(source, true, true);
             Drawable d = new ColorDrawable(Color.TRANSPARENT);
+            AQuery aq = new AQuery(rootView);
+            if(imageChecker) return d;
+            aq.id(R.id.imageView).image(source, true, true);
+            imageChecker=true;
+            Log.e("MYTAG", source);
             return d;
         }
     };
