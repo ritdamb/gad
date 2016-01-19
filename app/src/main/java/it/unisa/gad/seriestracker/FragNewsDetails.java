@@ -9,8 +9,12 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
+import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +31,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.XMLReader;
 
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -72,6 +77,7 @@ public class FragNewsDetails extends Fragment {
     private View rootView;
     private TextView tvDescription,tvTitle;
     private XPath xPathObj;
+    private boolean imageChecker;
 
 
 
@@ -112,6 +118,8 @@ public class FragNewsDetails extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_news_details, container, false);
 
+        imageChecker=false;
+
         tvTitle = (TextView) rootView.findViewById(R.id.textViewDetailsTitle);
         tvDescription = (TextView) rootView.findViewById(R.id.textViewDetailsDescription);
 
@@ -145,7 +153,9 @@ public class FragNewsDetails extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             dialog.dismiss();
-            tvDescription.setText(Html.fromHtml(result, new ImageGetter(), null));
+            result = result.replaceAll("&amp;quot;","''");
+            Spanned span = Html.fromHtml(result, new ImageGetter(), null);
+            tvDescription.setText(span);
             tvDescription.setMovementMethod(new ScrollingMovementMethod());
             tvTitle.setText(title);
 
@@ -206,9 +216,12 @@ public class FragNewsDetails extends Fragment {
 
         public Drawable getDrawable(String source) {
 
-            AQuery aq = new AQuery(rootView);
-            aq.id(R.id.imageView).image(source, true, true);
             Drawable d = new ColorDrawable(Color.TRANSPARENT);
+            AQuery aq = new AQuery(rootView);
+            if(imageChecker) return d;
+            aq.id(R.id.imageView).image(source, true, true);
+            imageChecker=true;
+            Log.e("MYTAG", source);
             return d;
         }
     };
