@@ -108,6 +108,7 @@ public class FragSearch extends android.support.v4.app.Fragment {
                 intent.putExtra("imgUrl",serie.getImageURL());
                 intent.putExtra("description",serie.getDescription());
                 intent.putExtra("imdbId",serie.getImdbID());
+                intent.putExtra("network",serie.getProducer());
                 startActivity(intent);
             }
         });

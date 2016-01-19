@@ -73,6 +73,7 @@ public class DetailsActivity extends Activity {
 	private WebView webView;
 	private Button btnPictures;
 	private TextView tvRating;
+	private TextView tvNetwork;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +90,7 @@ public class DetailsActivity extends Activity {
 		btnPictures = (Button) findViewById(R.id.buttonPicture);
 		arg = getIntent().getExtras();
 		nameTelefilm = arg.getString(Series.NAME_TELEFILM);
-
+		tvNetwork  = (TextView) findViewById(R.id.network);
 
 		btnPictures.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -109,6 +110,7 @@ public class DetailsActivity extends Activity {
 			s.setDescription(arg.getString("description"));
 			s.setId(arg.getString(Series.ID_TELEFILM));
 			s.setImdbID(arg.getString("imdbId"));
+			s.setProducer(arg.getString("network"));
 		}
 
 
@@ -116,6 +118,10 @@ public class DetailsActivity extends Activity {
 		aq = new AQuery(this);
 		if(arg.getString("imgUrl") != null ) {
 			aq.id(R.id.seriesDetBanner).image(arg.getString("imgUrl"), true, true, 500,0);
+		}else {
+			if(seriesToShow != null) {
+				if(seriesToShow.getImageURL() != null) aq.id(R.id.seriesDetBanner).image(seriesToShow.getImageURL(), true, true, 500,0);
+			}
 		}
 		/////////////////////////
 		tvTitle.setText(s.getName());
@@ -145,6 +151,8 @@ public class DetailsActivity extends Activity {
 			String urlMod;
 			String urlNextEp="http://next-episode.net/"+nameTelefilm.replaceAll(" ","-");
 			Boolean isWiki = true;
+			if(s.getProducer() != null) tvNetwork.setText("Network : "+s.getProducer());
+			else tvNetwork.setText("Network : Not Available");
 			if(s.getImdbID() != null && !(s.getImdbID().equals("NONE"))) {
 				urlMod = "http://www.imdb.com/title/"+s.getImdbID();
 				isWiki = false;
@@ -188,7 +196,10 @@ public class DetailsActivity extends Activity {
 				tvGenre.setText("Genre: " + seriesToShow.getGenere());
 			else
 				tvGenre.setText("Genre: Not Available");
+			if(seriesToShow.getProducer() != null) tvNetwork.setText("Network : "+seriesToShow.getProducer());
+			else tvNetwork.setText("Network : Not Available");
 		}
+
 	}
 
 	public class MyButtonClickListener implements View.OnClickListener {
@@ -345,35 +356,6 @@ public class DetailsActivity extends Activity {
 			}catch (XPathExpressionException e) {
 				e.printStackTrace();
 			}
-
-
-//			wikiDescription = "";
-//			try {
-//				Node genre = (Node) xPathObj.compile("//table/tbody/tr/td[@class='category']").evaluate(doc, XPathConstants.NODE);
-////				urlImage = (String) xPathObj.compile("//*[@id='mw-content-text']/table[1]/tbody/tr[2]/td/a/img/@src").evaluate(doc, XPathConstants.STRING);
-////				System.out.println("URL IMAGE = "+urlImage);
-//				if(genre == null) {
-//					flag = false;
-//				} else {
-//				flag = true;
-//				genreText = genre.getTextContent();
-//				genreText = genreText.trim();
-//				genreText = genreText.replace("\n", " ");
-//				for(int i = 0; i < doc.getDocumentElement().getElementsByTagName("p").getLength() ; i++){
-//					if(doc.getDocumentElement().getElementsByTagName("p").item(i).getParentNode().getParentNode().getNodeName().equals("div")) {
-//						if(doc.getDocumentElement().getElementsByTagName("p").item(i).getTextContent().length() > 30) {
-//							if( (wikiDescription+doc.getDocumentElement().getElementsByTagName("p").item(i).getTextContent()).length() > 2000 ) {
-//								break;
-//							} else {
-//								wikiDescription = wikiDescription+"\n"+doc.getDocumentElement().getElementsByTagName("p").item(i).getTextContent();
-//							}
-//						}
-//					}
-//				}
-//				}
-//			} catch (XPathExpressionException e) {
-//				e.printStackTrace();
-//			}
 
 
 

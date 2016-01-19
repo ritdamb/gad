@@ -127,7 +127,11 @@ public  class ApplicationVariables {
             FileOutputStream outputStream;
             outputStream = context.openFileOutput("preferiteSeries.xml", Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(outputStream);
-            os.writeObject(seriesList);
+            ArrayList<Series> seriesToSave  = new ArrayList<>();
+            for(int i = 0 ; i < seriesList.size() ; i++) {
+                seriesToSave.add(ApplicationVariables.getInstance().getSeriesFromData(context,seriesList.get(i)));
+            }
+            os.writeObject(seriesToSave);
             return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -255,6 +259,8 @@ public  class ApplicationVariables {
                         s.setImageURL(node.getChildNodes().item(i).getTextContent());
                     if (node.getChildNodes().item(i).getNodeName().equals("rating"))
                         s.setRating(node.getChildNodes().item(i).getTextContent());
+                    if (node.getChildNodes().item(i).getNodeName().equals("network"))
+                        s.setProducer(node.getChildNodes().item(i).getTextContent());
                 }
                 return s;
             } else return null;
@@ -328,6 +334,12 @@ public  class ApplicationVariables {
                 if(series.getImageURL() == null ) series.setImageURL("NONE");
                 imageElement.appendChild(original.createTextNode(series.getImageURL()));
                 seriesElement.appendChild(imageElement);
+
+                //Producer ( Network )
+                Element networkElement = original.createElement("network");
+                if(series.getProducer() == null ) series.setProducer("NONE");
+                networkElement.appendChild(original.createTextNode(series.getProducer()));
+                seriesElement.appendChild(networkElement);
 
                 Element rating = original.createElement("rating");
                 if(series.getRating() == null) series.setRating("NONE");
