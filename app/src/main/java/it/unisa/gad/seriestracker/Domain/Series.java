@@ -13,6 +13,7 @@ public class Series implements Serializable {
 
 
     private String name;
+    private String id;
     private String episodeTitle;
     private String producer;
     private String description;
@@ -29,8 +30,16 @@ public class Series implements Serializable {
     private String firstAired;
 
     public static final String NAME_TELEFILM="name_Telefilm";
+    public static final String ID_TELEFILM="id_Telefilm";
 
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
     public String getFirstAired() {
         return firstAired;
     }
