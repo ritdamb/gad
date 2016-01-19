@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import com.androidquery.AQuery;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -56,6 +58,7 @@ public class DetailsActivity extends Activity {
 	private Bundle arg;
 	private AQuery aq;
 	private Series seriesToShow;
+	private TextView tvNextEpisode;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,7 @@ public class DetailsActivity extends Activity {
 		tvDescription = (TextView) findViewById(R.id.textDetails);
 		tvGenre = (TextView) findViewById(R.id.telefilmGenre);
 		seriesBanner = (ImageView) findViewById(R.id.seriesDetBanner);
+		tvNextEpisode = (TextView) findViewById(R.id.textNextEpisode);
 
 		arg = getIntent().getExtras();
 		nameTelefilm = arg.getString(Series.NAME_TELEFILM);
@@ -106,9 +110,18 @@ public class DetailsActivity extends Activity {
 		if(seriesToShow == null) {
 			String seriesNameMod = nameTelefilm.replace(" ","_");
 			String urlMod = "https://en.wikipedia.org/wiki/"+seriesNameMod+"_(TV_series)";
+			String urlNextEp = "www.tvshowsmanager.com/serie.php?id="+seriesToShow.getId();
+
 			try {
-				URL url = new URL(urlMod);
-				BackgroundTask backgroundTask = new BackgroundTask("//div[@id='bodyContent']",url,this);
+				String[] xPaths = new String[2];
+				URL[] urls = new URL[2];
+
+				xPaths[0]="//div[@id='bodyContent']";;
+				xPaths[1]=XPathConstant.TV_SHOW_MANAGER_DAYS_FOR_NEXT_EP;
+
+				urls[0]= new URL(urlMod);
+				urls[1]= new URL(urlNextEp);
+				BackgroundTask backgroundTask = new BackgroundTask(xPaths,urls,this);
 				backgroundTask.execute();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -158,7 +171,9 @@ public class DetailsActivity extends Activity {
 	private class BackgroundTask extends AsyncTask<Void, Void, Void> {
 
 		private URL url;
+		private URL url2;
 		private String xPath;
+		private String xPath2;
 		private HtmlPageParser p;
 		private XPath xPathObj;
 		private ProgressDialog dialog;
@@ -169,9 +184,11 @@ public class DetailsActivity extends Activity {
 		private String urlImage = null;
 
 
-		public BackgroundTask(String xPath, URL url, Context context) {
-			this.xPath = xPath;
-			this.url = url;
+		public BackgroundTask(String[] xPaths, URL[] urls, Context context) {
+			this.xPath = xPaths[0];
+			this.url = urls[0];
+			this.xPath2 = xPaths[1];
+			this.url2 = urls[1];
 			this.context = context;
 			flag = false;
 		}
@@ -250,6 +267,25 @@ public class DetailsActivity extends Activity {
 			} catch (XPathExpressionException e) {
 				e.printStackTrace();
 			}
+
+			p = new HtmlPageParser();
+			p.setUrl(url2);
+			p.setXPath(xPath2);
+
+			p.perform();
+			doc = p.getResultXmlDocument();
+			Element element = doc.getDocumentElement();
+			String daysUntil = element.getTextContent();
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.DAY_OF_MONTH,Integer.parseInt(daysUntil));
+			int days = calendar.get(Calendar.DAY_OF_MONTH);
+			int month = calendar.get(Calendar.DAY_OF_WEEK);
+			int years = calendar.get(Calendar.DAY_OF_YEAR);
+
+			String dateNextEp = days+"/"+month+"/"+years;
+
+			Toast.makeText(context,dateNextEp, Toast.LENGTH_SHORT).show();
+
 			return null;
 		}
 	}
