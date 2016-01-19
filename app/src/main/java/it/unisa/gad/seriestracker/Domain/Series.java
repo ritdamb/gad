@@ -31,7 +31,7 @@ public class Series implements Serializable {
     private String firstAired;
 
     public static final String NAME_TELEFILM="name_Telefilm";
-    public static final String ID_TELEFILM="id_Telefilm";
+    public static final String ID_TELEFILM="tvdbId";
 
 
     public String getId() {

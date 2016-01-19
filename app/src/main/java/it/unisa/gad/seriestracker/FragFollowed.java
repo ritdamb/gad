@@ -57,7 +57,7 @@ public class FragFollowed extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Series serie= (Series) parent.getItemAtPosition(position);
+                Series serie = (Series) parent.getItemAtPosition(position);
                 Intent intent = new Intent(getView().getContext(), DetailsActivity.class);
                 intent.putExtra(Series.NAME_TELEFILM, serie.getName());
                 intent.putExtra(Series.ID_TELEFILM,serie.getId());

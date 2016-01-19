@@ -13,7 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:gravity="center_horizontal"
+            android:weightSum="1">
 
             <TextView
                 android:id="@+id/titleTelefilm"
@@ -42,13 +43,23 @@
                 android:layout_marginTop="10dp"
                 />
 
+            <TextView
+                android:id="@+id/ratingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text="Rating:"
+                android:layout_gravity="left"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"/>
+
 
 
             <TextView
                 android:id="@+id/textDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="5dp"
                 android:layout_gravity="center_horizontal|right"
@@ -61,21 +72,50 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|right"
                 />
-
-            <Button
-                android:id="@+id/buttonFollow"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginTop="50dp"
-                android:text="Follow"
-                android:drawableRight="@android:drawable/btn_star_big_on"/>
+                android:gravity="center">
 
+                <Button
+                    android:id="@+id/buttonFollow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="Follow"
+                    android:drawableRight="@android:drawable/btn_star_big_on"/>
 
+                <Button
+                    android:id="@+id/buttonTrailer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="Trailer"/>
+
+                <Button
+                    android:id="@+id/buttonPicture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="Pictures"/>
+            </LinearLayout>
+
+            
+
+            <WebView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/googleImg"
+                android:layout_gravity="right"
+                android:layout_weight="0.74" />
 
         </LinearLayout>
 
 
 
     </ScrollView>
+
+
 
 </LinearLayout>

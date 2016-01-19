@@ -178,17 +178,17 @@ public  class ApplicationVariables {
 
             // name elements
             Element name = doc.createElement("name");
-            name.appendChild(doc.createTextNode("Gotham"));
+            name.appendChild(doc.createTextNode(""));
             series.appendChild(name);
 
             // genre elements
             Element genre = doc.createElement("genre");
-            genre.appendChild(doc.createTextNode("Thriller,Action,Drama"));
+            genre.appendChild(doc.createTextNode(""));
             series.appendChild(genre);
 
             //description Element
             Element description = doc.createElement("description");
-            description.appendChild(doc.createTextNode("Description TEXT"));
+            description.appendChild(doc.createTextNode(""));
             series.appendChild(description);
 
 
@@ -253,6 +253,8 @@ public  class ApplicationVariables {
                         s.setGenere(node.getChildNodes().item(i).getTextContent());
                     if (node.getChildNodes().item(i).getNodeName().equals("image"))
                         s.setImageURL(node.getChildNodes().item(i).getTextContent());
+                    if (node.getChildNodes().item(i).getNodeName().equals("rating"))
+                        s.setRating(node.getChildNodes().item(i).getTextContent());
                 }
                 return s;
             } else return null;
@@ -301,7 +303,7 @@ public  class ApplicationVariables {
                 //IMDB_ID Element DA MODIFICARE
                 Element imdb_id = original.createElement("imdb_id");
                 if(series.getImdbID() == null) series.setImdbID("NONE");
-                id.appendChild(original.createTextNode(series.getImdbID()));
+                imdb_id.appendChild(original.createTextNode(series.getImdbID()));
                 seriesElement.appendChild(imdb_id);
 
                 // name elements
@@ -311,19 +313,26 @@ public  class ApplicationVariables {
 
                 //series Description
                 Element descriptionElement = original.createElement("description");
+                if(series.getDescription() == null) series.setDescription("");
                 descriptionElement.appendChild(original.createTextNode(series.getDescription()));
                 seriesElement.appendChild(descriptionElement);
 
                 //series Genre
                 Element genreElement = original.createElement("genre");
+                if(series.getGenere() == null) series.setGenere("NONE");
                 genreElement.appendChild(original.createTextNode(series.getGenere()));
                 seriesElement.appendChild(genreElement);
 
                 //Image Bytes
                 Element imageElement = original.createElement("image");
+                if(series.getImageURL() == null ) series.setImageURL("NONE");
                 imageElement.appendChild(original.createTextNode(series.getImageURL()));
                 seriesElement.appendChild(imageElement);
 
+                Element rating = original.createElement("rating");
+                if(series.getRating() == null) series.setRating("NONE");
+                rating.appendChild(original.createTextNode(series.getRating()));
+                seriesElement.appendChild(rating);
 
 
                 original.getDocumentElement().appendChild(seriesElement);

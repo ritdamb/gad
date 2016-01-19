@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -67,6 +69,10 @@ public class DetailsActivity extends Activity {
 	private Series seriesToShow;
 	private TextView tvNextEpisode;
 	private String idSerie;
+	private Series s;
+	private WebView webView;
+	private Button btnPictures;
+	private TextView tvRating;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,15 +84,32 @@ public class DetailsActivity extends Activity {
 		tvGenre = (TextView) findViewById(R.id.telefilmGenre);
 		seriesBanner = (ImageView) findViewById(R.id.seriesDetBanner);
 		tvNextEpisode = (TextView) findViewById(R.id.textNextEpisode);
-
+		webView = (WebView) findViewById(R.id.googleImg);
+		tvRating = (TextView) findViewById(R.id.ratingText);
+		btnPictures = (Button) findViewById(R.id.buttonPicture);
 		arg = getIntent().getExtras();
 		nameTelefilm = arg.getString(Series.NAME_TELEFILM);
+
+
+		btnPictures.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				webView.loadUrl("https://www.google.com/search?tbm=isch&q="+nameTelefilm);
+			}
+		});
+
 		idSerie= arg.getString(Series.ID_TELEFILM);
 
-		Series s = new Series();
+		s = new Series();
 		s.setName(nameTelefilm);
 		seriesToShow = ApplicationVariables.getInstance().getSeriesFromData(getApplicationContext(),s);
 
+		if(seriesToShow == null) {
+			s.setImageURL(arg.getString("imgUrl"));
+			s.setDescription(arg.getString("description"));
+			s.setId(arg.getString(Series.ID_TELEFILM));
+			s.setImdbID(arg.getString("imdbId"));
+		}
 
 
 		//////////////////////////
@@ -95,7 +118,7 @@ public class DetailsActivity extends Activity {
 			aq.id(R.id.seriesDetBanner).image(arg.getString("imgUrl"), true, true, 500,0);
 		}
 		/////////////////////////
-		tvTitle.setText(nameTelefilm);
+		tvTitle.setText(s.getName());
 
 
 		Button follow = (Button) findViewById(R.id.buttonFollow);
@@ -108,7 +131,7 @@ public class DetailsActivity extends Activity {
 		} else {
 			//Toast.makeText(getApplicationContext(),"PREFERITE SERIES IS NOT NULL",Toast.LENGTH_LONG).show();
 			Series temp = new Series();
-			temp.setName(nameTelefilm);
+			temp.setName(s.getName());
 			if(ApplicationVariables.getInstance().checkPreferiteSeries(getApplicationContext(), temp) == false) {
 				follow.setText("Follow");
 			} else follow.setText("Don't Follow");
@@ -118,32 +141,53 @@ public class DetailsActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		if(seriesToShow == null) {
-			String seriesNameMod = nameTelefilm.replace(" ","_");
-			String urlMod = "https://en.wikipedia.org/wiki/"+seriesNameMod+"_(TV_series)";
-			String urlNextEp="";
-			if(idSerie != null)
-				urlNextEp = "http://www.tvshowsmanager.com/serie.php?id="+idSerie;
-
-			Log.e("MyTAG",urlNextEp);
+			//If it's null , it will look in Wikipedia
+			String urlMod;
+			String urlNextEp="http://next-episode.net/"+nameTelefilm.replaceAll(" ","-");
+			Boolean isWiki = true;
+			if(s.getImdbID() != null && !(s.getImdbID().equals("NONE"))) {
+				urlMod = "http://www.imdb.com/title/"+s.getImdbID();
+				isWiki = false;
+			} else {
+				String seriesNameMod = s.getName().replace(" ", "_");
+				urlMod = "https://en.wikipedia.org/wiki/"+seriesNameMod+"_(TV_series)";
+			}
 			try {
 				String[] xPaths = new String[2];
 				URL[] urls = new URL[2];
 
-				xPaths[0]="//div[@id='bodyContent']";;
-				xPaths[1]=XPathConstant.TV_SHOW_MANAGER_DAYS_FOR_NEXT_EP;
+				if(isWiki) xPaths[0]="//div[@id='bodyContent']"; //XPath di Wikipedia
+				else xPaths[0]="//div[@id='content-2-wide']"; //Xpath di IMDB
 
+				xPaths[1]="//div[@id=\"next_episode\"]";
 				urls[0]= new URL(urlMod);
-				if(idSerie != null)
-					urls[1]= new URL(urlNextEp);
-				BackgroundTask backgroundTask = new BackgroundTask(xPaths,urls,this);
+				urls[1]= new URL(urlNextEp);
+
+				BackgroundTask backgroundTask = new BackgroundTask(xPaths,urls,this,isWiki,false);
 				backgroundTask.execute();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
 		} else {
+			String[] xPaths = new String[2];
+			URL[] urls = new URL[2];
+			xPaths[0]="//div[@id='content-2-wide']"; //Xpath di IMDB
+			xPaths[1]="//div[@id=\"next_episode\"]";
+			try {
+				urls[0]= new URL("http://www.imdb.com/title/"+s.getImdbID());
+				urls[1]= new URL("http://next-episode.net/"+seriesToShow.getName().replaceAll(" ", "-"));
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			BackgroundTask backgroundTask = new BackgroundTask(xPaths,urls,this,false,true);
+			backgroundTask.execute();
+			if(seriesToShow.getRating().equals("NONE")) tvRating.setText("Rating: Not available");
+			else tvRating.setText("Rating: "+seriesToShow.getRating()+"/10");
 			tvDescription.setText(seriesToShow.getDescription());
-			tvGenre.setText("GENRE: " + seriesToShow.getGenere());
-
+			if(!(seriesToShow.getGenere().equals("NONE")))
+				tvGenre.setText("Genre: " + seriesToShow.getGenere());
+			else
+				tvGenre.setText("Genre: Not Available");
 		}
 	}
 
@@ -192,26 +236,27 @@ public class DetailsActivity extends Activity {
 		private XPath xPathObj;
 		private ProgressDialog dialog;
 		private String wikiDescription;
+		private String imdbDescription;
+		private String imdbRating;
 		private Context context;
 		private String genreText;
 		private Boolean flag;
 		private String urlImage = null;
 		private HttpURLConnection urlConnection;
+		private Boolean isWiki;
+		private String genreValues = "";
+		private String data;
+		private Boolean justDate;
 
 
 
-		public BackgroundTask(String[] xPaths, URL[] urls, Context context) {
+		public BackgroundTask(String[] xPaths, URL[] urls, Context context,Boolean isWiki,Boolean justDate) {
+			this.isWiki = isWiki;
 			this.xPath = xPaths[0];
 			this.url = urls[0];
-			this.xPath2 = xPaths[1];
-			if(idSerie != null) {
-				this.url2 = urls[1];
-				try {
-					urlConnection = (HttpURLConnection) this.url2.openConnection();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			this.xPath2=xPaths[1];
+			this.url2=urls[1];
+			this.justDate = justDate;
 			this.context = context;
 			flag = false;
 
@@ -228,36 +273,40 @@ public class DetailsActivity extends Activity {
 			dialog.setTitle("Loading...");
 			dialog.setMessage("Loading The Selected Series...");
 			dialog.show();
-
 		}
 
-		@Override
-		protected void onPostExecute(Void result) {
 
-			//INSERIRE I VALORI NEI TEXFIELD
-			Series temp = new Series();
-			temp.setName(nameTelefilm);
-			if(flag){
-				tvDescription.setText(wikiDescription);
-				tvGenre.setText("GENRE: "+genreText);
-				temp.setDescription(wikiDescription);
-				temp.setGenere(genreText);
-			} else {
-				tvGenre.setText("");
-				temp.setGenere("");
-				tvDescription.setText(arg.getString("description"));
-				temp.setDescription(arg.getString("description"));
+
+
+		protected void onPostExecute(Void result) {
+			if(!justDate) {
+				if(imdbDescription != null && s.getDescription() != null) {
+					if(imdbDescription.length() < s.getDescription().length()) tvDescription.setText(s.getDescription());
+					else tvDescription.setText(imdbDescription);
+				} else tvDescription.setText(s.getDescription());
+
+				if(genreValues.equals("")) genreValues="Not available";
+				tvGenre.setText("Genre: "+genreValues);
+				if(data == null) tvNextEpisode.setText("Next Episode: not available");
+				else tvNextEpisode.setText("Next Episode :"+data);
+				if(imdbRating != null) {
+					if(!(imdbRating.equals(""))) {
+						tvRating.setText("Rating: "+imdbRating+"/10");
+						s.setRating(imdbRating);
+					} else tvRating.setText("Rating: Not available");
+				} else tvRating.setText("Rating: Not available");
+
+				dialog.dismiss();
+				//Aggiungere al DataWarehouse
+				s.setDescription(tvDescription.getText().toString());
+				s.setGenere(genreValues);
+				ApplicationVariables.getInstance().updateDataWarehouse(getApplicationContext(),s);
+
+			}else {
+				dialog.dismiss();
+				if(data == null) tvNextEpisode.setText("Next Episode: not available");
+				else tvNextEpisode.setText("Next Episode :"+data);
 			}
-//			if(arg.getString("imgUrl") != null ) {
-//				if(!(arg.getString("imgUrl").equals("NONE"))) temp.setImageURL(arg.getString("imgUrl"));
-//			} else {
-////				if(urlImage != null) {
-////					System.out.println("####### "+urlImage);
-////					temp.setImageURL(urlImage);
-////				}else temp.setImageURL("NONE");
-//			}
-			ApplicationVariables.getInstance().updateDataWarehouse(context, temp);
-			dialog.dismiss();
 		}
 
 		@Override
@@ -265,84 +314,69 @@ public class DetailsActivity extends Activity {
 			p.perform();
 			doc = p.getResultXmlDocument();
 			xPathObj = XPathFactory.newInstance().newXPath();
-			wikiDescription = "";
-			try {
-				Node genre = (Node) xPathObj.compile("//table/tbody/tr/td[@class='category']").evaluate(doc, XPathConstants.NODE);
-//				urlImage = (String) xPathObj.compile("//*[@id='mw-content-text']/table[1]/tbody/tr[2]/td/a/img/@src").evaluate(doc, XPathConstants.STRING);
-//				System.out.println("URL IMAGE = "+urlImage);
-				if(genre == null) {
-					flag = false;
-				} else {
-				flag = true;
-				genreText = genre.getTextContent();
-				genreText = genreText.trim();
-				genreText = genreText.replace("\n", " ");
-				for(int i = 0; i < doc.getDocumentElement().getElementsByTagName("p").getLength() ; i++){
-					if(doc.getDocumentElement().getElementsByTagName("p").item(i).getParentNode().getParentNode().getNodeName().equals("div")) {
-						if(doc.getDocumentElement().getElementsByTagName("p").item(i).getTextContent().length() > 30) {
-							if( (wikiDescription+doc.getDocumentElement().getElementsByTagName("p").item(i).getTextContent()).length() > 2000 ) {
-								break;
-							} else {
-								wikiDescription = wikiDescription+"\n"+doc.getDocumentElement().getElementsByTagName("p").item(i).getTextContent();
-							}
-						}
+			if(isWiki) {
+
+			}else {
+				try{
+					imdbDescription = (String) xPathObj.compile("//div[@itemprop='description']").evaluate(doc,XPathConstants.STRING);
+					imdbRating = (String) xPathObj.compile("//span[@itemprop='ratingValue']").evaluate(doc,XPathConstants.STRING);
+					NodeList genreList = (NodeList) xPathObj.compile("//span[@itemprop='genre']").evaluate(doc,XPathConstants.NODESET);
+					genreValues = "";
+					for(int i = 0; i < genreList.getLength() ; i++) {
+						genreValues = genreValues+" "+genreList.item(i).getTextContent();
 					}
-				}
-				}
-			} catch (XPathExpressionException e) {
+
+
+				}catch (XPathExpressionException e) {
+					e.printStackTrace();
+			}
+			}
+
+			p = new HtmlPageParser();
+			p.setUrl(url2);
+			p.setXPath(xPath2);
+			p.perform();
+			doc = p.getResultXmlDocument();
+			xPathObj = XPathFactory.newInstance().newXPath();
+			try {
+				Node nodeData = (Node) xPathObj.compile("//div[@id=\"next_episode\"]//div[@class=\"subheadline\" and h3/text()=\"Date:\"]/following::text()[1]").evaluate(doc, XPathConstants.NODE);
+				if(nodeData != null ) data = nodeData.getTextContent();
+				else data = null;
+			}catch (XPathExpressionException e) {
 				e.printStackTrace();
 			}
 
 
-			if(idSerie != null) {
-
-				urlConnection.setDoOutput(true);
-				urlConnection.setChunkedStreamingMode(0);
-				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-				DocumentBuilder db = null;
-				String daysUntil="";
-				try {
-					System.out.println("STO ENTRANDO QUA DENTRO");
-					db = dbf.newDocumentBuilder();
-					Document doc = db.parse(urlConnection.getInputStream());
-					xPathObj = XPathFactory.newInstance().newXPath();
-					ApplicationVariables.getInstance().printDocument(doc, System.out);
-					Node days = (Node) xPathObj.compile(XPathConstant.TV_SHOW_MANAGER_DAYS_FOR_NEXT_EP).evaluate(doc, XPathConstants.NODE);
-					daysUntil = days.getTextContent();
-					System.out.println("STICAZZODIGIORNI_-----_>"+daysUntil);
-
-
-				} catch (ParserConfigurationException e) {
-					e.printStackTrace();
-				} catch (SAXException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (XPathExpressionException e) {
-					e.printStackTrace();
-				} catch (TransformerException e) {
-					e.printStackTrace();
-				}
+//			wikiDescription = "";
+//			try {
+//				Node genre = (Node) xPathObj.compile("//table/tbody/tr/td[@class='category']").evaluate(doc, XPathConstants.NODE);
+////				urlImage = (String) xPathObj.compile("//*[@id='mw-content-text']/table[1]/tbody/tr[2]/td/a/img/@src").evaluate(doc, XPathConstants.STRING);
+////				System.out.println("URL IMAGE = "+urlImage);
+//				if(genre == null) {
+//					flag = false;
+//				} else {
+//				flag = true;
+//				genreText = genre.getTextContent();
+//				genreText = genreText.trim();
+//				genreText = genreText.replace("\n", " ");
+//				for(int i = 0; i < doc.getDocumentElement().getElementsByTagName("p").getLength() ; i++){
+//					if(doc.getDocumentElement().getElementsByTagName("p").item(i).getParentNode().getParentNode().getNodeName().equals("div")) {
+//						if(doc.getDocumentElement().getElementsByTagName("p").item(i).getTextContent().length() > 30) {
+//							if( (wikiDescription+doc.getDocumentElement().getElementsByTagName("p").item(i).getTextContent()).length() > 2000 ) {
+//								break;
+//							} else {
+//								wikiDescription = wikiDescription+"\n"+doc.getDocumentElement().getElementsByTagName("p").item(i).getTextContent();
+//							}
+//						}
+//					}
+//				}
+//				}
+//			} catch (XPathExpressionException e) {
+//				e.printStackTrace();
+//			}
 
 
 
-
-/*
-				Log.e("MYTAG", "element ->"+element.getSchemaTypeInfo());
-				String daysUntil = element.getFirstChild()
-						.getNodeValue();
-				Log.e("MYTAG", "I Giorni sono ->"+daysUntil);
-
-				Calendar calendar = Calendar.getInstance();
-				calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(daysUntil));
-				int days = calendar.get(Calendar.DAY_OF_MONTH);
-				int month = calendar.get(Calendar.DAY_OF_WEEK);
-				int years = calendar.get(Calendar.DAY_OF_YEAR);
-
-				String dateNextEp = days + "/" + month + "/" + years;
-
-				Toast.makeText(context, dateNextEp, Toast.LENGTH_SHORT).show();*/
-			}
 			return null;
 		}
 	}
