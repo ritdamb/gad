@@ -241,6 +241,10 @@ public  class ApplicationVariables {
                 System.out.println("Series Already Exists");
                 Series s = new Series();
                 for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                    if (node.getChildNodes().item(i).getNodeName().equals("tvdb_id"))
+                        s.setId(node.getChildNodes().item(i).getTextContent());
+                    if(node.getChildNodes().item(i).getNodeName().equals("imdb_id"))
+                        s.setImdbID(node.getChildNodes().item(i).getTextContent());
                     if (node.getChildNodes().item(i).getNodeName().equals("name"))
                         s.setName(node.getChildNodes().item(i).getTextContent());
                     if (node.getChildNodes().item(i).getNodeName().equals("description"))
@@ -285,44 +289,57 @@ public  class ApplicationVariables {
             } else {
             // Series doesn't Exists, create it
             // series elements
-            Element seriesElement = original.createElement("series");
-
-            // name elements
-            Element name = original.createElement("name");
-            name.appendChild(original.createTextNode(series.getName()));
-            seriesElement.appendChild(name);
-
-            //series Description
-            Element descriptionElement = original.createElement("description");
-            descriptionElement.appendChild(original.createTextNode(series.getDescription()));
-            seriesElement.appendChild(descriptionElement);
-
-            //series Genre
-            Element genreElement = original.createElement("genre");
-            genreElement.appendChild(original.createTextNode(series.getGenere()));
-            seriesElement.appendChild(genreElement);
-
-            //Image Bytes
-            Element imageElement = original.createElement("image");
-            imageElement.appendChild(original.createTextNode(series.getImageURL()));
-            seriesElement.appendChild(imageElement);
-            
+                 Element seriesElement = original.createElement("series");
 
 
-            original.getDocumentElement().appendChild(seriesElement);
+            //ID Element
+                Element id = original.createElement("tvdb_id");
+                if(series.getId() == null) series.setId("NONE");
+                id.appendChild(original.createTextNode(series.getId()));
+                seriesElement.appendChild(id);
 
-            // write the content into xml file
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(original);
+                //IMDB_ID Element DA MODIFICARE
+                Element imdb_id = original.createElement("imdb_id");
+                if(series.getImdbID() == null) series.setImdbID("NONE");
+                id.appendChild(original.createTextNode(series.getImdbID()));
+                seriesElement.appendChild(id);
+
+                // name elements
+                Element name = original.createElement("name");
+                name.appendChild(original.createTextNode(series.getName()));
+                seriesElement.appendChild(name);
+
+                //series Description
+                Element descriptionElement = original.createElement("description");
+                descriptionElement.appendChild(original.createTextNode(series.getDescription()));
+                seriesElement.appendChild(descriptionElement);
+
+                //series Genre
+                Element genreElement = original.createElement("genre");
+                genreElement.appendChild(original.createTextNode(series.getGenere()));
+                seriesElement.appendChild(genreElement);
+
+                //Image Bytes
+                Element imageElement = original.createElement("image");
+                imageElement.appendChild(original.createTextNode(series.getImageURL()));
+                seriesElement.appendChild(imageElement);
 
 
-            File seriesLists = new File(context.getFilesDir(), "seriesList.xml");
 
-            StreamResult result = new StreamResult(seriesLists);
-            transformer.transform(source, result);
+                original.getDocumentElement().appendChild(seriesElement);
 
-            System.out.println("File updated!");
+                // write the content into xml file
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                DOMSource source = new DOMSource(original);
+
+
+                File seriesLists = new File(context.getFilesDir(), "seriesList.xml");
+
+                StreamResult result = new StreamResult(seriesLists);
+                transformer.transform(source, result);
+
+                System.out.println("File updated!");
 
             }
 

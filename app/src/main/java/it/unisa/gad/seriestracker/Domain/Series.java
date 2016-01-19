@@ -14,6 +14,7 @@ public class Series implements Serializable {
 
     private String name;
     private String id;
+    private String imdbID;
     private String episodeTitle;
     private String producer;
     private String description;
@@ -37,9 +38,19 @@ public class Series implements Serializable {
         return id;
     }
 
+
     public void setId(String id) {
         this.id = id;
     }
+
+    public String getImdbID() {
+        return imdbID;
+    }
+
+    public void setImdbID(String imdbID) {
+        this.imdbID = imdbID;
+    }
+
     public String getFirstAired() {
         return firstAired;
     }

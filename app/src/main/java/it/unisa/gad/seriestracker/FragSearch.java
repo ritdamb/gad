@@ -105,15 +105,6 @@ public class FragSearch extends android.support.v4.app.Fragment {
                 Intent intent = new Intent(getView().getContext(), DetailsActivity.class);
                 intent.putExtra(Series.NAME_TELEFILM, nameTele);
                 intent.putExtra(Series.ID_TELEFILM,serie.getId());
-                ByteArrayOutputStream bs = new ByteArrayOutputStream();
-                Bitmap b = serie.getImageBig();
-                if(b == null ) {
-                    Toast.makeText(getActivity().getApplicationContext(),"NULL BITCH "+serie.getImageURL(),Toast.LENGTH_LONG).show();
-                    return;
-                }
-                b.compress(Bitmap.CompressFormat.PNG,50,bs);
-                intent.putExtra("img", bs.toByteArray());
-                Log.e("MYTAG", serie.getImageURL());
                 intent.putExtra("imgUrl",serie.getImageURL());
                 intent.putExtra("description",serie.getDescription());
                 startActivity(intent);
@@ -214,6 +205,9 @@ public class FragSearch extends android.support.v4.app.Fragment {
                     Series temp = new Series();
                     for(int x = 0 ; x < nodes.item(i).getChildNodes().getLength(); x++) {
 
+                        if(nodes.item(i).getChildNodes().item(x).getNodeName().equals("IMDB_ID")) {
+                            temp.setImdbID(nodes.item(i).getChildNodes().item(x).getTextContent());
+                        }
                         if(nodes.item(i).getChildNodes().item(x).getNodeName().equals("seriesid")) {
                             temp.setId(nodes.item(i).getChildNodes().item(x).getTextContent());
                         }

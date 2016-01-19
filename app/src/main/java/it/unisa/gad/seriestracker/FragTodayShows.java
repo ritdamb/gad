@@ -100,7 +100,7 @@ public class FragTodayShows extends android.support.v4.app.Fragment {
         arrayAdapter = new SeriesArrayAdapter(getContext(),seriesList);
         list = (ListView) rootView.findViewById(R.id.listViewTonight);
         downloadTrendingTonightSeries();
-        init();
+        //init();
         return rootView;
     }
     public void downloadTrendingTonightSeries(){
