@@ -50,7 +50,6 @@ public class FragFollowed extends Fragment {
 
         FoundSeriesAdapter arrayAdapter = new FoundSeriesAdapter(getContext(),resultSeries);
 
-
         listView.setAdapter(arrayAdapter);
 
 
