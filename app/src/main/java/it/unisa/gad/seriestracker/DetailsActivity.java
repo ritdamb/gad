@@ -75,6 +75,7 @@ public class DetailsActivity extends Activity {
 		arg = getIntent().getExtras();
 		nameTelefilm = arg.getString(Series.NAME_TELEFILM);
 		idSerie= arg.getString(Series.ID_TELEFILM);
+
 		Series s = new Series();
 		s.setName(nameTelefilm);
 		seriesToShow = ApplicationVariables.getInstance().getSeriesFromData(getApplicationContext(),s);
@@ -112,8 +113,11 @@ public class DetailsActivity extends Activity {
 		if(seriesToShow == null) {
 			String seriesNameMod = nameTelefilm.replace(" ","_");
 			String urlMod = "https://en.wikipedia.org/wiki/"+seriesNameMod+"_(TV_series)";
-			String urlNextEp = "www.tvshowsmanager.com/serie.php?id="+idSerie;
+			String urlNextEp="";
+			if(idSerie != null)
+				urlNextEp = "https://www.tvshowsmanager.com/serie.php?id="+idSerie;
 
+			Log.e("MyTAG",urlNextEp);
 			try {
 				String[] xPaths = new String[2];
 				URL[] urls = new URL[2];
@@ -122,7 +126,8 @@ public class DetailsActivity extends Activity {
 				xPaths[1]=XPathConstant.TV_SHOW_MANAGER_DAYS_FOR_NEXT_EP;
 
 				urls[0]= new URL(urlMod);
-				urls[1]= new URL(urlNextEp);
+				if(idSerie != null)
+					urls[1]= new URL(urlNextEp);
 				BackgroundTask backgroundTask = new BackgroundTask(xPaths,urls,this);
 				backgroundTask.execute();
 			} catch (MalformedURLException e) {
@@ -190,7 +195,8 @@ public class DetailsActivity extends Activity {
 			this.xPath = xPaths[0];
 			this.url = urls[0];
 			this.xPath2 = xPaths[1];
-			this.url2 = urls[1];
+			if(idSerie != null)
+				this.url2 = urls[1];
 			this.context = context;
 			flag = false;
 		}
@@ -270,24 +276,26 @@ public class DetailsActivity extends Activity {
 				e.printStackTrace();
 			}
 
-			p = new HtmlPageParser();
-			p.setUrl(url2);
-			p.setXPath(xPath2);
 
-			p.perform();
-			doc = p.getResultXmlDocument();
-			Element element = doc.getDocumentElement();
-			String daysUntil = element.getTextContent();
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.DAY_OF_MONTH,Integer.parseInt(daysUntil));
-			int days = calendar.get(Calendar.DAY_OF_MONTH);
-			int month = calendar.get(Calendar.DAY_OF_WEEK);
-			int years = calendar.get(Calendar.DAY_OF_YEAR);
+			if(idSerie != null) {
+				p = new HtmlPageParser();
+				p.setUrl(url2);
+				p.setXPath(xPath2);
 
-			String dateNextEp = days+"/"+month+"/"+years;
+				p.perform();
+				doc = p.getResultXmlDocument();
+				Element element = doc.getDocumentElement();
+				String daysUntil = element.getTextContent();
+				Calendar calendar = Calendar.getInstance();
+				calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(daysUntil));
+				int days = calendar.get(Calendar.DAY_OF_MONTH);
+				int month = calendar.get(Calendar.DAY_OF_WEEK);
+				int years = calendar.get(Calendar.DAY_OF_YEAR);
 
-			Toast.makeText(context,dateNextEp, Toast.LENGTH_SHORT).show();
+				String dateNextEp = days + "/" + month + "/" + years;
 
+				Toast.makeText(context, dateNextEp, Toast.LENGTH_SHORT).show();
+			}
 			return null;
 		}
 	}
