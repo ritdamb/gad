@@ -37,6 +37,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import it.unisa.gad.seriestracker.Constant.XPathConstant;
 import it.unisa.gad.seriestracker.Domain.Series;
 import it.unisa.gad.seriestracker.util.ApplicationVariables;
 import it.unisa.gad.seriestracker.util.HtmlPageParser;
@@ -53,7 +54,8 @@ public class DetailsActivity extends Activity {
 	private TextView tvGenre;
 	private ImageView seriesBanner;
 	private Bundle arg;
-
+	private AQuery aq;
+	private Series seriesToShow;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +69,31 @@ public class DetailsActivity extends Activity {
 
 		arg = getIntent().getExtras();
 		nameTelefilm = arg.getString(Series.NAME_TELEFILM);
-		if(arg.getByteArray("img") != null) {
-			Bitmap b = BitmapFactory.decodeByteArray(arg.getByteArray("img"),0,arg.getByteArray("img").length);
-			seriesBanner.setImageBitmap(b);
-		}
+		Series s = new Series();
+		s.setName(nameTelefilm);
+		seriesToShow = ApplicationVariables.getInstance().getSeriesFromData(getApplicationContext(),s);
+
+//		if(arg.getByteArray("img") != null) {
+//			Bitmap b = BitmapFactory.decodeByteArray(arg.getByteArray("img"),0,arg.getByteArray("img").length);
+//			seriesBanner.setImageBitmap(b);
+//		}
+			if(seriesToShow != null) {
+				if (!(seriesToShow.getImageURL().equals("NONE"))) {
+					aq = new AQuery(this);
+					if (arg.getString("imgUrl") != null) {
+						Bitmap b = aq.getCachedImage(arg.getString("imgUrl"));
+						if (b == null) {
+							if (arg.getByteArray("img") != null) {
+								b = BitmapFactory.decodeByteArray(arg.getByteArray("img"), 0, arg.getByteArray("img").length);
+								seriesBanner.setImageBitmap(b);
+								Toast.makeText(this, " IMG ", Toast.LENGTH_LONG).show();
+							}
+						} else {
+							seriesBanner.setImageBitmap(b);
+						}
+					}
+				}
+			}
 
 		tvTitle.setText(nameTelefilm);
 
@@ -89,22 +112,24 @@ public class DetailsActivity extends Activity {
 			if(ApplicationVariables.getInstance().checkPreferiteSeries(getApplicationContext(), temp) == false) {
 				follow.setText("Follow");
 			} else follow.setText("Don't Follow");
-
-
 		}
 	}
 
 	protected void onStart() {
 		super.onStart();
-
-		String seriesNameMod = nameTelefilm.replace(" ","_");
-		String urlMod = "https://en.wikipedia.org/wiki/"+seriesNameMod+"_(TV_series)";
-		try {
-			URL url = new URL(urlMod);
-			BackgroundTask backgroundTask = new BackgroundTask("//div[@id='bodyContent']",url,this);
-			backgroundTask.execute();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
+		if(seriesToShow == null) {
+			String seriesNameMod = nameTelefilm.replace(" ","_");
+			String urlMod = "https://en.wikipedia.org/wiki/"+seriesNameMod+"_(TV_series)";
+			try {
+				URL url = new URL(urlMod);
+				BackgroundTask backgroundTask = new BackgroundTask("//div[@id='bodyContent']",url,this);
+				backgroundTask.execute();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+		} else {
+			tvDescription.setText(seriesToShow.getDescription());
+			tvGenre.setText("GENRE: "+seriesToShow.getGenere());
 		}
 	}
 
@@ -123,7 +148,7 @@ public class DetailsActivity extends Activity {
 					ApplicationVariables.getInstance().createPreferiteFile(getApplicationContext(), preferiteList);
 
 					Toast.makeText(DetailsActivity.this,
-							nameTelefilm + "added to your preferite list", Toast.LENGTH_SHORT).show();
+							nameTelefilm + " added to your preferite list", Toast.LENGTH_SHORT).show();
 					button.setText("Don't Follow");
 				}
 				else{
@@ -154,6 +179,7 @@ public class DetailsActivity extends Activity {
 		private Context context;
 		private String genreText;
 		private Boolean flag;
+		private String urlImage = null;
 
 
 		public BackgroundTask(String xPath, URL url, Context context) {
@@ -180,13 +206,28 @@ public class DetailsActivity extends Activity {
 		protected void onPostExecute(Void result) {
 
 			//INSERIRE I VALORI NEI TEXFIELD
+			Series temp = new Series();
+			temp.setName(nameTelefilm);
 			if(flag){
 				tvDescription.setText(wikiDescription);
 				tvGenre.setText("GENRE: "+genreText);
+				temp.setDescription(wikiDescription);
+				temp.setGenere(genreText);
 			} else {
 				tvGenre.setText("");
+				temp.setGenere("");
 				tvDescription.setText(arg.getString("description"));
+				temp.setDescription(arg.getString("description"));
 			}
+			if(arg.getString("imgUrl") != null ) {
+				if(!(arg.getString("imgUrl").equals("NONE"))) temp.setImageURL(arg.getString("imgUrl"));
+			} else {
+				if(urlImage != null) {
+					System.out.println("####### "+urlImage);
+					temp.setImageURL(urlImage);
+				}else temp.setImageURL("NONE");
+			}
+			ApplicationVariables.getInstance().updateDataWarehouse(context, temp);
 			dialog.dismiss();
 		}
 
@@ -198,6 +239,8 @@ public class DetailsActivity extends Activity {
 			wikiDescription = "";
 			try {
 				Node genre = (Node) xPathObj.compile("//table/tbody/tr/td[@class='category']").evaluate(doc, XPathConstants.NODE);
+				urlImage = (String) xPathObj.compile("//*[@id='mw-content-text']/table[1]/tbody/tr[2]/td/a/img/@src").evaluate(doc, XPathConstants.STRING);
+				System.out.println("URL IMAGE = "+urlImage);
 				if(genre == null) {
 					flag = false;
 				} else {
@@ -223,7 +266,4 @@ public class DetailsActivity extends Activity {
 			return null;
 		}
 	}
-
-
-
 }

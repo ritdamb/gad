@@ -2,12 +2,15 @@ package it.unisa.gad.seriestracker.util;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -31,6 +34,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
@@ -56,7 +60,7 @@ public  class ApplicationVariables {
     //qui si possono definire nuove liste di serie, che poi verranno richiamate dalla parte grafica per costruire gli adapter nelle activity
     //Questi verranno settati, creati, durante le xpath.
 
-    public ApplicationVariables(){
+    public ApplicationVariables() {
 
     }
 
@@ -70,7 +74,7 @@ public  class ApplicationVariables {
         return singletonApp;
     }
 
-    public void setTodaySeries(Document doc ) {
+    public void setTodaySeries(Document doc) {
         this.todaySeries = doc;
     }
 
@@ -81,7 +85,7 @@ public  class ApplicationVariables {
     public ArrayList<Series> getPreferiteSeries(Context context) {
         try {
             FileInputStream fileInputStream = context.openFileInput("preferiteSeries.xml");
-            if(fileInputStream == null) return null;
+            if (fileInputStream == null) return null;
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             ArrayList<Series> series = (ArrayList<Series>) objectInputStream.readObject();
             return series;
@@ -97,31 +101,31 @@ public  class ApplicationVariables {
         return null;
     }
 
-    public boolean savePreferiteSeries(Context context,Series series) {
+    public boolean savePreferiteSeries(Context context, Series series) {
         ArrayList<Series> preferiteSeries = getPreferiteSeries(context);
-        if(preferiteSeries == null) return false;
+        if (preferiteSeries == null) return false;
         else {
             preferiteSeries.add(series);
-            return createPreferiteFile(context,preferiteSeries);
+            return createPreferiteFile(context, preferiteSeries);
         }
     }
 
-    public boolean checkPreferiteSeries(Context context, Series series){
+    public boolean checkPreferiteSeries(Context context, Series series) {
         ArrayList<Series> preferiteSeries = getPreferiteSeries(context);
-        if(preferiteSeries == null) return false;
+        if (preferiteSeries == null) return false;
         else {
-            for(int i = 0 ; i < preferiteSeries.size(); i++ ) {
-                if(preferiteSeries.get(i).getName().equals(series.getName())) return true;
+            for (int i = 0; i < preferiteSeries.size(); i++) {
+                if (preferiteSeries.get(i).getName().equals(series.getName())) return true;
             }
             return false;
         }
     }
 
     public boolean createPreferiteFile(Context context, ArrayList<Series> seriesList) {
-        try{
+        try {
             File preferiteLists = new File(context.getFilesDir(), "preferiteSeries.xml");
             FileOutputStream outputStream;
-            outputStream = context.openFileOutput("preferiteSeries.xml",Context.MODE_PRIVATE);
+            outputStream = context.openFileOutput("preferiteSeries.xml", Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(outputStream);
             os.writeObject(seriesList);
             return true;
@@ -134,14 +138,14 @@ public  class ApplicationVariables {
         }
     }
 
-    public boolean checkDataWarehouse(Context context){
-        try{
+    public boolean checkDataWarehouse(Context context) {
+        try {
             FileInputStream fileInputStream = context.openFileInput("seriesList.xml");
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document original = db.parse(new InputSource(fileInputStream));
 
-            printDocument(original,System.out);
+            printDocument(original, System.out);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -158,8 +162,8 @@ public  class ApplicationVariables {
         return true;
     }
 
-    public void createDataWareHouse(Context context){
-        try{
+    public void createDataWareHouse(Context context) {
+        try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
@@ -170,7 +174,6 @@ public  class ApplicationVariables {
             // series elements
             Element series = doc.createElement("series");
             rootElement.appendChild(series);
-
 
 
             // name elements
@@ -187,8 +190,6 @@ public  class ApplicationVariables {
             Element description = doc.createElement("description");
             description.appendChild(doc.createTextNode("Description TEXT"));
             series.appendChild(description);
-
-
 
 
             doc.appendChild(rootElement);
@@ -227,7 +228,126 @@ public  class ApplicationVariables {
                 new StreamResult(new OutputStreamWriter(out, "UTF-8")));
     }
 
-    public void updateDataWarehouse(Context context){
+    public Series getSeriesFromData(Context context, Series series) {
+        try {
+            FileInputStream fileInputStream = context.openFileInput("seriesList.xml");
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document original = db.parse(new InputSource(fileInputStream));
+            //check if already Exists
+            XPath xPathObj = XPathFactory.newInstance().newXPath();
+            Node node = (Node) xPathObj.compile("//series[name='" + series.getName() + "']").evaluate(original, XPathConstants.NODE);
+            if (node != null) {
+                System.out.println("Series Already Exists");
+                Series s = new Series();
+                for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                    if (node.getChildNodes().item(i).getNodeName().equals("name"))
+                        s.setName(node.getChildNodes().item(i).getTextContent());
+                    if (node.getChildNodes().item(i).getNodeName().equals("description"))
+                        s.setDescription(node.getChildNodes().item(i).getTextContent());
+                    if (node.getChildNodes().item(i).getNodeName().equals("genre"))
+                        s.setGenere(node.getChildNodes().item(i).getTextContent());
+                    if (node.getChildNodes().item(i).getNodeName().equals("image"))
+                        s.setImageURL(node.getChildNodes().item(i).getTextContent());
+                }
+                return s;
+            } else return null;
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+            return null;
+        } catch (SAXException e) {
+            e.printStackTrace();
+            return null;
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Series updateDataWarehouse(Context context, Series series) {
+
+        try{
+            FileInputStream fileInputStream = context.openFileInput("seriesList.xml");
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document original = db.parse(new InputSource(fileInputStream));
+            //check if already Exists
+            Series x = getSeriesFromData(context, series);
+            if(x != null) {
+                System.out.println("Series Already Exists");
+                return x;
+            } else {
+            // Series doesn't Exists, create it
+            // series elements
+            Element seriesElement = original.createElement("series");
+
+            // name elements
+            Element name = original.createElement("name");
+            name.appendChild(original.createTextNode(series.getName()));
+            seriesElement.appendChild(name);
+
+            //series Description
+            Element descriptionElement = original.createElement("description");
+            descriptionElement.appendChild(original.createTextNode(series.getDescription()));
+            seriesElement.appendChild(descriptionElement);
+
+            //series Genre
+            Element genreElement = original.createElement("genre");
+            genreElement.appendChild(original.createTextNode(series.getGenere()));
+            seriesElement.appendChild(genreElement);
+
+            //Image Bytes
+            Element imageElement = original.createElement("image");
+            imageElement.appendChild(original.createTextNode(series.getImageURL()));
+            seriesElement.appendChild(imageElement);
+            
+
+
+            original.getDocumentElement().appendChild(seriesElement);
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(original);
+
+
+            File seriesLists = new File(context.getFilesDir(), "seriesList.xml");
+
+            StreamResult result = new StreamResult(seriesLists);
+            transformer.transform(source, result);
+
+            System.out.println("File updated!");
+
+            }
+
+            printDocument(original,System.out);
+
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+            return null;
+        } catch (SAXException e) {
+            e.printStackTrace();
+            return null;
+        } catch (TransformerException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
 
     }
+
 }

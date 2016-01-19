@@ -6,6 +6,7 @@ package it.unisa.gad.seriestracker;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,8 +37,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -97,6 +100,7 @@ public class FragTodayShows extends android.support.v4.app.Fragment {
         arrayAdapter = new SeriesArrayAdapter(getContext(),seriesList);
         list = (ListView) rootView.findViewById(R.id.listViewTonight);
         downloadTrendingTonightSeries();
+        init();
         return rootView;
     }
     public void downloadTrendingTonightSeries(){
@@ -129,6 +133,19 @@ public class FragTodayShows extends android.support.v4.app.Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    private void init() {
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Series s = (Series) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getView().getContext(), DetailsActivity.class);
+                intent.putExtra(Series.NAME_TELEFILM, s.getName());
+                startActivity(intent);
+
+            }
+        });
     }
 
     private class BackgroundTask extends AsyncTask<Void, Void, Void> {

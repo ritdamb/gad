@@ -5,7 +5,7 @@
         <item android:id="@+id/nav_tonight" android:icon="@android:drawable/ic_menu_today"
             android:title="@string/title_section1" />
 
-        <item android:id="@+id/nav_followed" android:icon="@android:drawable/ic_menu_view"
+        <item android:id="@+id/nav_followed" android:icon="@android:drawable/btn_star"
             android:title="@string/title_section2" />
 
         <item android:id="@+id/nav_lastSubs" android:icon="@android:drawable/ic_popup_reminder"
