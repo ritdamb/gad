@@ -104,6 +104,7 @@ public class FragSearch extends android.support.v4.app.Fragment {
                 String nameTele = serie.getName();
                 Intent intent = new Intent(getView().getContext(), DetailsActivity.class);
                 intent.putExtra(Series.NAME_TELEFILM, nameTele);
+                intent.putExtra(Series.ID_TELEFILM,serie.getId());
                 ByteArrayOutputStream bs = new ByteArrayOutputStream();
                 Bitmap b = serie.getImageBig();
                 if(b == null ) {
@@ -213,6 +214,9 @@ public class FragSearch extends android.support.v4.app.Fragment {
                     Series temp = new Series();
                     for(int x = 0 ; x < nodes.item(i).getChildNodes().getLength(); x++) {
 
+                        if(nodes.item(i).getChildNodes().item(x).getNodeName().equals("seriesid")) {
+                            temp.setId(nodes.item(i).getChildNodes().item(x).getTextContent());
+                        }
                         if(nodes.item(i).getChildNodes().item(x).getNodeName().equals("SeriesName")) {
                             temp.setName(nodes.item(i).getChildNodes().item(x).getTextContent());
                         }
@@ -252,7 +256,7 @@ public class FragSearch extends android.support.v4.app.Fragment {
     }
 
 
-                // TODO: Rename method, update argument and hook method into UI event
+    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

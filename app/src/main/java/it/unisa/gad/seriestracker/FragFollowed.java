@@ -25,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import it.unisa.gad.seriestracker.Domain.Series;
 import it.unisa.gad.seriestracker.util.ApplicationVariables;
+import it.unisa.gad.seriestracker.util.FoundSeriesAdapter;
 
 /**
  * Created by Rita on 13/12/2015.
@@ -47,27 +48,22 @@ public class FragFollowed extends Fragment {
         //per ora estrapolo solo i title
         //va modificato
 
-        ArrayList<String> resultTitle = new ArrayList<String>();
-
-        if(resultSeries != null)
-            for (Series s: resultSeries)
-                resultTitle.add(s.getName());
+        FoundSeriesAdapter arrayAdapter = new FoundSeriesAdapter(getContext(),resultSeries);
 
 
-        ArrayAdapter<String> ad = new ArrayAdapter<String>(getContext(),R.layout.text_view,resultTitle);
-
-        listView.setAdapter(ad);
+        listView.setAdapter(arrayAdapter);
 
 
-       listView.setOnItemClickListener(new OnItemClickListener() {
-           @Override
-           public void onItemClick(AdapterView<?> parent, View view,
-                                   int position, long id) {
-               String name = (String) parent.getItemAtPosition(position);
-               Intent intent = new Intent(getView().getContext(), DetailsActivity.class);
-               intent.putExtra(Series.NAME_TELEFILM, name);
-               startActivity(intent);
-           }
+        listView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Series serie= (Series) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getView().getContext(), DetailsActivity.class);
+                intent.putExtra(Series.NAME_TELEFILM, serie.getName());
+                intent.putExtra(Series.ID_TELEFILM,serie.getId());
+                startActivity(intent);
+            }
         });
         return rootView;
     }
