@@ -211,9 +211,8 @@ public class DetailsActivity extends Activity {
 				if(button.getText().equals("Follow")){
 					ArrayList<Series> preferiteList = ApplicationVariables.getInstance().getPreferiteSeries(getApplicationContext());
 					if(preferiteList == null) return;
-					Series temp = new Series();
-					temp.setName(nameTelefilm);
-					preferiteList.add(temp);
+					if(seriesToShow == null) preferiteList.add(s);
+					else preferiteList.add(seriesToShow);
 					ApplicationVariables.getInstance().createPreferiteFile(getApplicationContext(), preferiteList);
 
 					Toast.makeText(DetailsActivity.this,
@@ -356,9 +355,6 @@ public class DetailsActivity extends Activity {
 			}catch (XPathExpressionException e) {
 				e.printStackTrace();
 			}
-
-
-
 			return null;
 		}
 	}

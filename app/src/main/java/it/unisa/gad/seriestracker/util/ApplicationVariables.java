@@ -127,11 +127,7 @@ public  class ApplicationVariables {
             FileOutputStream outputStream;
             outputStream = context.openFileOutput("preferiteSeries.xml", Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(outputStream);
-            ArrayList<Series> seriesToSave  = new ArrayList<>();
-            for(int i = 0 ; i < seriesList.size() ; i++) {
-                seriesToSave.add(ApplicationVariables.getInstance().getSeriesFromData(context,seriesList.get(i)));
-            }
-            os.writeObject(seriesToSave);
+            os.writeObject(seriesList);
             return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
