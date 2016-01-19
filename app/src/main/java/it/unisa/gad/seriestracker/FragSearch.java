@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -105,8 +106,14 @@ public class FragSearch extends android.support.v4.app.Fragment {
                 intent.putExtra(Series.NAME_TELEFILM, nameTele);
                 ByteArrayOutputStream bs = new ByteArrayOutputStream();
                 Bitmap b = serie.getImageBig();
+                if(b == null ) {
+                    Toast.makeText(getActivity().getApplicationContext(),"NULL BITCH "+serie.getImageURL(),Toast.LENGTH_LONG).show();
+                    return;
+                }
                 b.compress(Bitmap.CompressFormat.PNG,50,bs);
-                intent.putExtra("img",bs.toByteArray());
+                intent.putExtra("img", bs.toByteArray());
+                Log.e("MYTAG", serie.getImageURL());
+                intent.putExtra("imgUrl",serie.getImageURL());
                 intent.putExtra("description",serie.getDescription());
                 startActivity(intent);
             }
@@ -211,6 +218,7 @@ public class FragSearch extends android.support.v4.app.Fragment {
                         }
                         if(nodes.item(i).getChildNodes().item(x).getNodeName().equals("banner")) {
                             temp.setImageURL("http://thetvdb.com/banners/" + nodes.item(i).getChildNodes().item(x).getTextContent());
+                            System.out.println("###Searched Img Url = "+temp.getImageURL());
                         }
                         if(nodes.item(i).getChildNodes().item(x).getNodeName().equals("FirstAired")) {
                             temp.setFirstAired(nodes.item(i).getChildNodes().item(x).getTextContent());

@@ -60,6 +60,7 @@ public class FoundSeriesAdapter extends ArrayAdapter<Series> {
             aq.id(R.id.seriesFoundBanner).image(R.drawable.nobanner);
         }else {
             aq.id(R.id.seriesFoundBanner).image(item.getImageURL(), true, true, 500,0);
+
             item.setImageBig(aq.getCachedImage(item.getImageURL()));
         }
         // Return the completed view to render on screen

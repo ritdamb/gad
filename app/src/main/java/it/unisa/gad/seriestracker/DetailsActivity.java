@@ -73,28 +73,14 @@ public class DetailsActivity extends Activity {
 		s.setName(nameTelefilm);
 		seriesToShow = ApplicationVariables.getInstance().getSeriesFromData(getApplicationContext(),s);
 
-//		if(arg.getByteArray("img") != null) {
-//			Bitmap b = BitmapFactory.decodeByteArray(arg.getByteArray("img"),0,arg.getByteArray("img").length);
-//			seriesBanner.setImageBitmap(b);
-//		}
-			if(seriesToShow != null) {
-				if (!(seriesToShow.getImageURL().equals("NONE"))) {
-					aq = new AQuery(this);
-					if (arg.getString("imgUrl") != null) {
-						Bitmap b = aq.getCachedImage(arg.getString("imgUrl"));
-						if (b == null) {
-							if (arg.getByteArray("img") != null) {
-								b = BitmapFactory.decodeByteArray(arg.getByteArray("img"), 0, arg.getByteArray("img").length);
-								seriesBanner.setImageBitmap(b);
-								Toast.makeText(this, " IMG ", Toast.LENGTH_LONG).show();
-							}
-						} else {
-							seriesBanner.setImageBitmap(b);
-						}
-					}
-				}
-			}
 
+
+		//////////////////////////
+		aq = new AQuery(this);
+		if(arg.getString("imgUrl") != null ) {
+			aq.id(R.id.seriesDetBanner).image(arg.getString("imgUrl"), true, true, 500,0);
+		}
+		/////////////////////////
 		tvTitle.setText(nameTelefilm);
 
 
@@ -129,7 +115,8 @@ public class DetailsActivity extends Activity {
 			}
 		} else {
 			tvDescription.setText(seriesToShow.getDescription());
-			tvGenre.setText("GENRE: "+seriesToShow.getGenere());
+			tvGenre.setText("GENRE: " + seriesToShow.getGenere());
+
 		}
 	}
 
@@ -219,14 +206,14 @@ public class DetailsActivity extends Activity {
 				tvDescription.setText(arg.getString("description"));
 				temp.setDescription(arg.getString("description"));
 			}
-			if(arg.getString("imgUrl") != null ) {
-				if(!(arg.getString("imgUrl").equals("NONE"))) temp.setImageURL(arg.getString("imgUrl"));
-			} else {
-				if(urlImage != null) {
-					System.out.println("####### "+urlImage);
-					temp.setImageURL(urlImage);
-				}else temp.setImageURL("NONE");
-			}
+//			if(arg.getString("imgUrl") != null ) {
+//				if(!(arg.getString("imgUrl").equals("NONE"))) temp.setImageURL(arg.getString("imgUrl"));
+//			} else {
+////				if(urlImage != null) {
+////					System.out.println("####### "+urlImage);
+////					temp.setImageURL(urlImage);
+////				}else temp.setImageURL("NONE");
+//			}
 			ApplicationVariables.getInstance().updateDataWarehouse(context, temp);
 			dialog.dismiss();
 		}
@@ -239,8 +226,8 @@ public class DetailsActivity extends Activity {
 			wikiDescription = "";
 			try {
 				Node genre = (Node) xPathObj.compile("//table/tbody/tr/td[@class='category']").evaluate(doc, XPathConstants.NODE);
-				urlImage = (String) xPathObj.compile("//*[@id='mw-content-text']/table[1]/tbody/tr[2]/td/a/img/@src").evaluate(doc, XPathConstants.STRING);
-				System.out.println("URL IMAGE = "+urlImage);
+//				urlImage = (String) xPathObj.compile("//*[@id='mw-content-text']/table[1]/tbody/tr[2]/td/a/img/@src").evaluate(doc, XPathConstants.STRING);
+//				System.out.println("URL IMAGE = "+urlImage);
 				if(genre == null) {
 					flag = false;
 				} else {
