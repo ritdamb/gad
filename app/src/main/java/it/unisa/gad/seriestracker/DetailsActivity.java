@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import com.androidquery.AQuery;
@@ -16,6 +18,7 @@ import java.util.Calendar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SyncStatusObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -32,7 +35,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -115,7 +122,7 @@ public class DetailsActivity extends Activity {
 			String urlMod = "https://en.wikipedia.org/wiki/"+seriesNameMod+"_(TV_series)";
 			String urlNextEp="";
 			if(idSerie != null)
-				urlNextEp = "https://www.tvshowsmanager.com/serie.php?id="+idSerie;
+				urlNextEp = "http://www.tvshowsmanager.com/serie.php?id="+idSerie;
 
 			Log.e("MyTAG",urlNextEp);
 			try {
@@ -189,16 +196,26 @@ public class DetailsActivity extends Activity {
 		private String genreText;
 		private Boolean flag;
 		private String urlImage = null;
+		private HttpURLConnection urlConnection;
+
 
 
 		public BackgroundTask(String[] xPaths, URL[] urls, Context context) {
 			this.xPath = xPaths[0];
 			this.url = urls[0];
 			this.xPath2 = xPaths[1];
-			if(idSerie != null)
+			if(idSerie != null) {
 				this.url2 = urls[1];
+				try {
+					urlConnection = (HttpURLConnection) this.url2.openConnection();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 			this.context = context;
 			flag = false;
+
+
 		}
 
 		@Override
@@ -278,14 +295,44 @@ public class DetailsActivity extends Activity {
 
 
 			if(idSerie != null) {
-				p = new HtmlPageParser();
-				p.setUrl(url2);
-				p.setXPath(xPath2);
 
-				p.perform();
-				doc = p.getResultXmlDocument();
-				Element element = doc.getDocumentElement();
-				String daysUntil = element.getTextContent();
+				urlConnection.setDoOutput(true);
+				urlConnection.setChunkedStreamingMode(0);
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				DocumentBuilder db = null;
+				String daysUntil="";
+				try {
+					System.out.println("STO ENTRANDO QUA DENTRO");
+					db = dbf.newDocumentBuilder();
+					Document doc = db.parse(urlConnection.getInputStream());
+					xPathObj = XPathFactory.newInstance().newXPath();
+					ApplicationVariables.getInstance().printDocument(doc, System.out);
+					Node days = (Node) xPathObj.compile(XPathConstant.TV_SHOW_MANAGER_DAYS_FOR_NEXT_EP).evaluate(doc, XPathConstants.NODE);
+					daysUntil = days.getTextContent();
+					System.out.println("STICAZZODIGIORNI_-----_>"+daysUntil);
+
+
+				} catch (ParserConfigurationException e) {
+					e.printStackTrace();
+				} catch (SAXException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (XPathExpressionException e) {
+					e.printStackTrace();
+				} catch (TransformerException e) {
+					e.printStackTrace();
+				}
+
+
+
+
+/*
+				Log.e("MYTAG", "element ->"+element.getSchemaTypeInfo());
+				String daysUntil = element.getFirstChild()
+						.getNodeValue();
+				Log.e("MYTAG", "I Giorni sono ->"+daysUntil);
+
 				Calendar calendar = Calendar.getInstance();
 				calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(daysUntil));
 				int days = calendar.get(Calendar.DAY_OF_MONTH);
@@ -294,7 +341,7 @@ public class DetailsActivity extends Activity {
 
 				String dateNextEp = days + "/" + month + "/" + years;
 
-				Toast.makeText(context, dateNextEp, Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, dateNextEp, Toast.LENGTH_SHORT).show();*/
 			}
 			return null;
 		}

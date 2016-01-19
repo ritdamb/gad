@@ -302,7 +302,7 @@ public  class ApplicationVariables {
                 Element imdb_id = original.createElement("imdb_id");
                 if(series.getImdbID() == null) series.setImdbID("NONE");
                 id.appendChild(original.createTextNode(series.getImdbID()));
-                seriesElement.appendChild(id);
+                seriesElement.appendChild(imdb_id);
 
                 // name elements
                 Element name = original.createElement("name");
