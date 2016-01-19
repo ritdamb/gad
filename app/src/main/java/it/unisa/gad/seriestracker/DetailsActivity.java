@@ -59,6 +59,7 @@ public class DetailsActivity extends Activity {
 	private AQuery aq;
 	private Series seriesToShow;
 	private TextView tvNextEpisode;
+	private String idSerie;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,7 @@ public class DetailsActivity extends Activity {
 
 		arg = getIntent().getExtras();
 		nameTelefilm = arg.getString(Series.NAME_TELEFILM);
+		idSerie= arg.getString(Series.ID_TELEFILM);
 		Series s = new Series();
 		s.setName(nameTelefilm);
 		seriesToShow = ApplicationVariables.getInstance().getSeriesFromData(getApplicationContext(),s);
@@ -110,7 +112,7 @@ public class DetailsActivity extends Activity {
 		if(seriesToShow == null) {
 			String seriesNameMod = nameTelefilm.replace(" ","_");
 			String urlMod = "https://en.wikipedia.org/wiki/"+seriesNameMod+"_(TV_series)";
-			String urlNextEp = "www.tvshowsmanager.com/serie.php?id="+seriesToShow.getId();
+			String urlNextEp = "www.tvshowsmanager.com/serie.php?id="+idSerie;
 
 			try {
 				String[] xPaths = new String[2];
