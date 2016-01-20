@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SyncStatusObserver;
@@ -24,6 +26,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -53,7 +56,8 @@ import it.unisa.gad.seriestracker.Domain.Series;
 import it.unisa.gad.seriestracker.util.ApplicationVariables;
 import it.unisa.gad.seriestracker.util.HtmlPageParser;
 
-public class DetailsActivity extends Activity {
+
+public class DetailsActivity extends FragmentActivity implements View.OnClickListener {
 
 	private String nameTelefilm;
 	private File file ;
@@ -91,6 +95,8 @@ public class DetailsActivity extends Activity {
 		arg = getIntent().getExtras();
 		nameTelefilm = arg.getString(Series.NAME_TELEFILM);
 		tvNetwork  = (TextView) findViewById(R.id.network);
+		Button buttonTrailer = (Button) findViewById(R.id.buttonTrailer);
+		buttonTrailer.setOnClickListener(this);
 
 		btnPictures.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -143,6 +149,8 @@ public class DetailsActivity extends Activity {
 			} else follow.setText("Don't Follow");
 		}
 	}
+
+
 
 	protected void onStart() {
 		super.onStart();
@@ -200,6 +208,14 @@ public class DetailsActivity extends Activity {
 			else tvNetwork.setText("Network : Not Available");
 		}
 
+	}
+
+	@Override
+	public void onClick(View v) {
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.content_frame, FragmentYoutube.newInstance(nameTelefilm));
+		transaction.addToBackStack(null);
+		transaction.commit();
 	}
 
 	public class MyButtonClickListener implements View.OnClickListener {
