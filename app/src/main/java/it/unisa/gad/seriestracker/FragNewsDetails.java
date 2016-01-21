@@ -123,7 +123,7 @@ public class FragNewsDetails extends Fragment {
             dialog = new ProgressDialog(getContext());
             dialog.setCancelable(true);
             dialog.setTitle("Loading...");
-            dialog.setMessage("Loading RSSItem...");
+            dialog.setMessage("Loading News...");
             dialog.show();
 
         }

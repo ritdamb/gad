@@ -49,7 +49,7 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
     private String mParam1;
     private String mParam2;
 
-    private ArrayList<News> newsArrayList;
+    private ArrayList<News> newsArrayList = new ArrayList<News>();
     private ArrayAdapter<News> array_adapter = null;
     private ListView rssListView = null;
     private ParseHandler parseHandler = null;
@@ -102,8 +102,10 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
             newsArrayList = new ArrayList<News>();
             parseHandler = new ParseHandler();
             parseHandler.execute();
-        }else
-            array_adapter = new NewsArrayAdapter(getContext(), list.getList());
+        }else{
+            newsArrayList =list.getList();
+            array_adapter = new NewsArrayAdapter(getContext(),newsArrayList);
+        }
 
 
         rssListView.setAdapter(array_adapter);
@@ -219,6 +221,5 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
         transaction.replace(R.id.content_frame, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
-
     }
 }
