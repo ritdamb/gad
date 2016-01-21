@@ -100,13 +100,14 @@
                     android:id="@+id/buttonTrailer"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:text="Trailer"/>
+                    android:text="Trailer"
+                    android:drawableRight="@drawable/youtube_icon"/>
 
                 <Button
                     android:id="@+id/buttonPicture"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:text="Pictures"/>
+                    android:text="Images"/>
             </LinearLayout>
 
 
