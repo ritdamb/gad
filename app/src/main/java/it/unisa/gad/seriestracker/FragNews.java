@@ -94,13 +94,17 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
         rssListView.setOnItemClickListener(this);
 
         TimeStampListSeries<News> list = ApplicationVariables.getInstance().getNewsFromData(getContext());
-        if(list == null | list.getTimeStamp().getTime() + 600000 < System.currentTimeMillis()){
+        if(list == null){
             newsArrayList = new ArrayList<News>();
             parseHandler = new ParseHandler();
             parseHandler.execute();
-        }else{
+        }else if(list.getTimeStamp().getTime() + 600000 < System.currentTimeMillis()){
+            newsArrayList = new ArrayList<News>();
+            parseHandler = new ParseHandler();
+            parseHandler.execute();
+        }else
             array_adapter = new NewsArrayAdapter(getContext(), list.getList());
-        }
+
 
         rssListView.setAdapter(array_adapter);
 
