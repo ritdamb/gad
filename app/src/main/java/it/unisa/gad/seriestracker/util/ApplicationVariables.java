@@ -75,13 +75,6 @@ public  class ApplicationVariables {
         return singletonApp;
     }
 
-    public void setTodaySeries(Document doc) {
-        this.todaySeries = doc;
-    }
-
-    public Document getTodaySeries() {
-        return todaySeries;
-    }
 
     public TimeStampListSeries<News> getNewsFromData(Context context) {
         try {
@@ -399,8 +392,6 @@ public  class ApplicationVariables {
 
             printDocument(original,System.out);
 
-
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return null;
@@ -419,6 +410,43 @@ public  class ApplicationVariables {
         }
         return null;
 
+    }
+
+    public TimeStampListSeries<Series> getTodaySeries(Context context){
+        try {
+            FileInputStream fileInputStream = context.openFileInput("todaySeries.xml");
+            if (fileInputStream == null) return null;
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            TimeStampListSeries<Series> TmSeries = (TimeStampListSeries) objectInputStream.readObject();
+            return TmSeries;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (StreamCorruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean createTmTodaySeries(Context context, ArrayList<Series> seriesList) {
+        try {
+            TimeStampListSeries<Series> x = new TimeStampListSeries(seriesList);
+            File preferiteLists = new File(context.getFilesDir(), "todaySeries.xml");
+            FileOutputStream outputStream;
+            outputStream = context.openFileOutput("todaySeries.xml", Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(outputStream);
+            os.writeObject(x);
+            return true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

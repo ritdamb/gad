@@ -49,6 +49,8 @@ import org.w3c.dom.NodeList;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -99,7 +101,22 @@ public class FragTodayShows extends android.support.v4.app.Fragment {
         seriesList = new ArrayList<Series>();
         arrayAdapter = new SeriesArrayAdapter(getContext(),seriesList);
         list = (ListView) rootView.findViewById(R.id.listViewTonight);
-        downloadTrendingTonightSeries();
+        Date currentTime = new Date();
+        if(ApplicationVariables.getInstance().getTodaySeries(getContext()) != null) {
+            if(ApplicationVariables.getInstance().getTodaySeries(getContext()).getTimeStamp().getTime() + 1080000 < currentTime.getTime()) {
+                downloadTrendingTonightSeries();
+            } else {
+                seriesList = ApplicationVariables.getInstance().getTodaySeries(context).getList();
+                arrayAdapter = new SeriesArrayAdapter(getContext(),ApplicationVariables.getInstance().getTodaySeries(context).getList());
+                list.setAdapter(arrayAdapter);
+            }
+        } else {
+            Toast.makeText(getContext(),"OGGETTO UGUALE NULL",Toast.LENGTH_SHORT).show();
+            downloadTrendingTonightSeries();
+            ApplicationVariables.getInstance().createTmTodaySeries(getContext(),seriesList);
+         }
+
+
         //init();
         return rootView;
     }
@@ -178,6 +195,7 @@ public class FragTodayShows extends android.support.v4.app.Fragment {
         protected void onPostExecute(Void result) {
 
             list.setAdapter(arrayAdapter);
+            ApplicationVariables.getInstance().createTmTodaySeries(getContext(), seriesList);
             dialog.dismiss();
         }
 

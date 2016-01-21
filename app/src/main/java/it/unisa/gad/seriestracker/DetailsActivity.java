@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v4.app.FragmentActivity;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
@@ -82,6 +84,7 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.details_activity);
 
 		tvTitle = (TextView) findViewById(R.id.titleTelefilm);
@@ -150,10 +153,26 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 		}
 	}
 
+	public void onResume() {
+		super.onResume();
+			Toast.makeText(getApplicationContext(),"On Resume",Toast.LENGTH_LONG).show();
+	}
 
+	public void onRestart() {
+		super.onRestart();
+		Toast.makeText(getApplicationContext(),"On Restart",Toast.LENGTH_LONG).show();
 
+	}
+
+	public void onStop(){
+		super.onStop();
+		Toast.makeText(getApplicationContext(),"On Stop",Toast.LENGTH_LONG).show();
+
+	}
 	protected void onStart() {
 		super.onStart();
+		Toast.makeText(getApplicationContext(),"on Start",Toast.LENGTH_LONG).show();
+
 		if(seriesToShow == null) {
 			//If it's null , it will look in Wikipedia
 			String urlMod;
