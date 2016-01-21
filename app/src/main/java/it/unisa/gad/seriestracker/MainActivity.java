@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if(!(ApplicationVariables.getInstance().checkDataWarehouse(this.getApplicationContext()))){
-            Toast.makeText(getApplicationContext()," CREATING DATA WAR",Toast.LENGTH_LONG).show();
             ApplicationVariables.getInstance().createDataWareHouse(getApplicationContext());
         }
 
@@ -111,7 +110,7 @@ public class MainActivity extends AppCompatActivity
             newFragment = new FragSearch();
 
         } else if (id == R.id.nav_view) {
-
+            newFragment = new FragTest();
         }
 
 

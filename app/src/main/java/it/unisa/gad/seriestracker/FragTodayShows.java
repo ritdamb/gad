@@ -111,7 +111,6 @@ public class FragTodayShows extends android.support.v4.app.Fragment {
                 list.setAdapter(arrayAdapter);
             }
         } else {
-            Toast.makeText(getContext(),"OGGETTO UGUALE NULL",Toast.LENGTH_SHORT).show();
             downloadTrendingTonightSeries();
             ApplicationVariables.getInstance().createTmTodaySeries(getContext(),seriesList);
          }
