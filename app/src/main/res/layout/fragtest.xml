@@ -3,10 +3,82 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <it.unisa.gad.seriestracker.util.RoundedImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/luigi"
-        android:layout_gravity="center"
-             />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <it.unisa.gad.seriestracker.util.RoundedImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/luigi"
+            android:layout_gravity="left"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="50dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Luigi Amitrano"
+            android:textSize="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <it.unisa.gad.seriestracker.util.RoundedImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/rita"
+            android:layout_gravity="left"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="50dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Rita D'Ambrosio"
+            android:textSize="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <it.unisa.gad.seriestracker.util.RoundedImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ludi"
+            android:layout_gravity="left"
+            android:adjustViewBounds="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="50dp"
+            android:scaleType="centerCrop"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Luigi di Martino"
+            android:textSize="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"/>
+
+
+    </LinearLayout>
+
 </LinearLayout>
