@@ -12,12 +12,10 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,9 +28,14 @@ import javax.xml.xpath.XPathFactory;
 
 import it.unisa.gad.seriestracker.Constant.URLConstant;
 import it.unisa.gad.seriestracker.Constant.XPathConstant;
+import it.unisa.gad.seriestracker.Domain.News;
+import it.unisa.gad.seriestracker.util.ApplicationVariables;
 import it.unisa.gad.seriestracker.util.HtmlPageParser;
 import it.unisa.gad.seriestracker.util.NewsArrayAdapter;
-import it.unisa.gad.seriestracker.util.RSSItem;
+import it.unisa.gad.seriestracker.util.TimeStampListSeries;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 
 public class FragNews extends Fragment implements AbsListView.OnItemClickListener {
@@ -46,8 +49,8 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
     private String mParam1;
     private String mParam2;
 
-    private ArrayList<RSSItem> RSSItems = new ArrayList<RSSItem>();
-    private ArrayAdapter<RSSItem> array_adapter = null;
+    private ArrayList<News> newsArrayList;
+    private ArrayAdapter<News> array_adapter = null;
     private ListView rssListView = null;
     private ParseHandler parseHandler = null;
     private XPath xPathObj;
@@ -90,16 +93,24 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
         rssListView = (ListView) view.findViewById(R.id.listViewNews);
         rssListView.setOnItemClickListener(this);
 
+        TimeStampListSeries<News> list = ApplicationVariables.getInstance().getNewsFromData(getContext());
+        if(list == null | list.getTimeStamp().getTime() + 600000 < System.currentTimeMillis()){
+            newsArrayList = new ArrayList<News>();
+            parseHandler = new ParseHandler();
+            parseHandler.execute();
+        }else{
+            array_adapter = new NewsArrayAdapter(getContext(), list.getList());
+        }
+
         rssListView.setAdapter(array_adapter);
-        parseHandler = new ParseHandler();
-        parseHandler.execute();
+
 
         return view;
     }
 
 
     private class ParseHandler extends
-            AsyncTask<String, Void, ArrayList<RSSItem>> {
+            AsyncTask<String, Void, ArrayList<News>> {
 
         private ProgressDialog dialog;
 
@@ -114,18 +125,20 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
         }
 
         @Override
-        protected void onPostExecute(ArrayList<RSSItem> items) {
+        protected void onPostExecute(ArrayList<News> items) {
             dialog.dismiss();
-            RSSItems.clear();
-            RSSItems.addAll(items);
-            array_adapter = new NewsArrayAdapter(getContext(), RSSItems);
+            newsArrayList.clear();
+            newsArrayList.addAll(items);
+            array_adapter = new NewsArrayAdapter(getContext(), newsArrayList);
             rssListView.setAdapter(array_adapter);
+            ApplicationVariables.getInstance().createNewsFile(getContext(), new TimeStampListSeries<News>(items));
+
         }
 
         @Override
-        protected ArrayList<RSSItem> doInBackground(String... feedUrl) {
+        protected ArrayList<News> doInBackground(String... feedUrl) {
 
-            ArrayList<RSSItem> rssItems = new ArrayList<RSSItem>();
+            ArrayList<News> newses = new ArrayList<News>();
             URL url = null;
 
             try {
@@ -147,14 +160,14 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
             try {
                 for(int i = 1 ; i < doc.getElementsByTagName("li").getLength(); i ++ ) {
 
-                    RSSItem item = new RSSItem();
+                    News item = new News();
 
                     Node img = (Node) xPathObj.compile("//li["+i+"]/div/div/a/img/@src").evaluate(doc, XPathConstants.NODE);
                     if(img == null) {
-                        item.setImageURL("");
+                        item.setImg("");
                     }else {
-                        item.setImageURL(img.getTextContent());
-                        System.out.println("IMG: "+item.getImageURL());
+                        item.setImg(img.getTextContent());
+                        System.out.println("IMG: "+item.getImg());
                     }
 
                     Object title = xPathObj.compile("//li["+i+"]/div[@class=\"info\"]/h3/a").evaluate(doc);
@@ -168,10 +181,10 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
 
                     Node description = (Node) xPathObj.compile("//li["+i+"]/div[@class=\"info\"]/p[@class=\"body\"]/text()").evaluate(doc, XPathConstants.NODE);
                     if(description == null){
-                        item.setDescription("");
+                        item.setBriefDescription("");
                     }else{
-                        item.setDescription(description.getTextContent());
-                        System.out.println("DESCRIPTION: "+item.getDescription());
+                        item.setBriefDescription(description.getTextContent());
+                        System.out.println("BRIEF_DESCRIPTION: "+item.getBriefDescription());
                     }
                     Node urlDescription = (Node) xPathObj.compile("//li["+i+"]/div[@class=\"info\"]/h3/a/@href").evaluate(doc, XPathConstants.NODE);
                     if(urlDescription == null){
@@ -181,30 +194,27 @@ public class FragNews extends Fragment implements AbsListView.OnItemClickListene
                         System.out.println("URLDESC: " + item.getUrlDescription());
                     }
 
-                    rssItems.add(item);
+                    newses.add(item);
                 }
 
             } catch (XPathExpressionException e) {
                 e.printStackTrace();
             }
 
-                    return rssItems;
+                    return newses;
         }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        String title = RSSItems.get(position).getTitle();
-        String urldescription = RSSItems.get(position).getUrlDescription();
+        String title = newsArrayList.get(position).getTitle();
+        String urldescription = newsArrayList.get(position).getUrlDescription();
         FragNewsDetails fragment = FragNewsDetails.newInstance(title, urldescription);
-
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
-
-
 
     }
 }

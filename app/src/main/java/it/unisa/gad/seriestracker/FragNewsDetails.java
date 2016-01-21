@@ -1,46 +1,30 @@
 package it.unisa.gad.seriestracker;
 
 import android.app.ProgressDialog;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
-import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
 
-import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.XMLReader;
 
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -48,15 +32,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
-import it.unisa.gad.seriestracker.Constant.URLConstant;
 import it.unisa.gad.seriestracker.Constant.XPathConstant;
 import it.unisa.gad.seriestracker.util.HtmlPageParser;
-import it.unisa.gad.seriestracker.util.NewsArrayAdapter;
-import it.unisa.gad.seriestracker.util.RSSItem;
 
 
 /**
@@ -145,7 +123,7 @@ public class FragNewsDetails extends Fragment {
             dialog = new ProgressDialog(getContext());
             dialog.setCancelable(true);
             dialog.setTitle("Loading...");
-            dialog.setMessage("Loading News...");
+            dialog.setMessage("Loading RSSItem...");
             dialog.show();
 
         }

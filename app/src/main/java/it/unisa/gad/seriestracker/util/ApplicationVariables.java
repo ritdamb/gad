@@ -46,6 +46,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import it.unisa.gad.seriestracker.Domain.News;
 import it.unisa.gad.seriestracker.Domain.Series;
 
 /**
@@ -80,6 +81,42 @@ public  class ApplicationVariables {
 
     public Document getTodaySeries() {
         return todaySeries;
+    }
+
+    public TimeStampListSeries<News> getNewsFromData(Context context) {
+        try {
+            FileInputStream fileInputStream = context.openFileInput("newsList.xml");
+            if (fileInputStream == null) return null;
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            TimeStampListSeries<News> newsList = (TimeStampListSeries<News>) objectInputStream.readObject();
+            return newsList;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (StreamCorruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean createNewsFile(Context context, TimeStampListSeries<News> newsArrayList) {
+        try {
+            File newsList = new File(context.getFilesDir(), "newsList.xml");
+            FileOutputStream outputStream;
+            outputStream = context.openFileOutput("newsList.xml", Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(outputStream);
+            os.writeObject(newsArrayList);
+            return true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public ArrayList<Series> getPreferiteSeries(Context context) {
@@ -291,12 +328,12 @@ public  class ApplicationVariables {
                 System.out.println("Series Already Exists");
                 return x;
             } else {
-            // Series doesn't Exists, create it
-            // series elements
-                 Element seriesElement = original.createElement("series");
+                // Series doesn't Exists, create it
+                // series elements
+                Element seriesElement = original.createElement("series");
 
 
-            //ID Element
+                //ID Element
                 Element id = original.createElement("tvdb_id");
                 if(series.getId() == null) series.setId("NONE");
                 id.appendChild(original.createTextNode(series.getId()));
