@@ -45,12 +45,15 @@ public class FragFollowed extends Fragment {
         ApplicationVariables appvar= ApplicationVariables.getInstance();
         ArrayList<Series> resultSeries = appvar.getPreferiteSeries(rootView.getContext());
 
-        //per ora estrapolo solo i title
-        //va modificato
+        if(resultSeries != null) {
+            FoundSeriesAdapter arrayAdapter = new FoundSeriesAdapter(getContext(), resultSeries);
+            listView.setAdapter(arrayAdapter);
 
-        FoundSeriesAdapter arrayAdapter = new FoundSeriesAdapter(getContext(),resultSeries);
+        }else {
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),R.layout.text_view);
+            listView.setAdapter(arrayAdapter);
+        }
 
-        listView.setAdapter(arrayAdapter);
 
 
         listView.setOnItemClickListener(new OnItemClickListener() {
