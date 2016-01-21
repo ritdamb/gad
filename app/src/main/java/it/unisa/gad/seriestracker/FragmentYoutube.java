@@ -10,8 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubeIntents;
 import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import com.google.android.youtube.player.YouTubePlayerView;
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -60,9 +64,9 @@ public class FragmentYoutube extends Fragment {
 
         youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
 
-
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.add(R.id.youtube_fragment, youTubePlayerFragment).commit();
+        //transaction.add(R.id.youtube_fragment, youTubePlayer).commit();
         Bundle arg = getArguments();
         BackgroundTask b = new BackgroundTask(arg.getString("query"));
         b.execute();
@@ -99,23 +103,29 @@ public class FragmentYoutube extends Fragment {
         protected void onPostExecute(Void result) {
 
             dialog.dismiss();
-            youTubePlayerFragment.initialize(YOUTUBE_API_KEY, new YouTubePlayer.OnInitializedListener() {
-                @Override
-                public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                    if (!b) {
-                        YPlayer = youTubePlayer;
-                        YPlayer.setFullscreen(true);
+            youTubePlayerFragment.startActivity(YouTubeStandalonePlayer.createVideoIntent(getActivity(),
+                    YOUTUBE_API_KEY, resultID, 0, false, true));
 
-                        YPlayer.loadVideo(resultID);
-                        YPlayer.play();
-                    }
-                }
 
-                @Override
-                public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
-
-                }
-            });
+//            youTubePlayerFragment.initialize(YOUTUBE_API_KEY, new YouTubePlayer.OnInitializedListener() {
+//                @Override
+//
+//                public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+//                    if (!b) {
+//                        YPlayer = youTubePlayer;
+//                        YPlayer.setFullscreenControlFlags(YouTubePlayer.FULLSCREEN_FLAG_CONTROL_ORIENTATION);
+//                        YPlayer.loadVideo(resultID);
+//                        YPlayer.play();
+//                    }
+//                }
+//
+//                @Override
+//                public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+//
+//                }
+//
+//
+//            });
 
 
         }

@@ -6,7 +6,7 @@
         android:layout_height="match_parent"
         android:weightSum="1">
 
-        <ImageView
+        <it.unisa.gad.seriestracker.util.RoundedImageView
             android:id="@+id/imageNews"
             android:layout_gravity="left"
             android:layout_width="80dp"

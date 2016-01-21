@@ -12,10 +12,26 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import com.androidquery.AQuery;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.ResourceId;
+import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.app.FragmentActivity;
@@ -81,12 +97,11 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 	private TextView tvRating;
 	private TextView tvNetwork;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.details_activity);
-
 		tvTitle = (TextView) findViewById(R.id.titleTelefilm);
 		tvDescription = (TextView) findViewById(R.id.textDetails);
 		tvGenre = (TextView) findViewById(R.id.telefilmGenre);
@@ -100,7 +115,6 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 		tvNetwork  = (TextView) findViewById(R.id.network);
 		Button buttonTrailer = (Button) findViewById(R.id.buttonTrailer);
 		buttonTrailer.setOnClickListener(this);
-
 		btnPictures.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -122,7 +136,6 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 			s.setProducer(arg.getString("network"));
 		}
 
-
 		//////////////////////////
 		aq = new AQuery(this);
 		if(arg.getString("imgUrl") != null ) {
@@ -134,7 +147,6 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 		}
 		/////////////////////////
 		tvTitle.setText(s.getName());
-
 
 		Button follow = (Button) findViewById(R.id.buttonFollow);
 		follow.setOnClickListener(new MyButtonClickListener());
@@ -155,24 +167,21 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 
 	public void onResume() {
 		super.onResume();
-			Toast.makeText(getApplicationContext(),"On Resume",Toast.LENGTH_LONG).show();
 	}
 
 	public void onRestart() {
 		super.onRestart();
-		Toast.makeText(getApplicationContext(),"On Restart",Toast.LENGTH_LONG).show();
+	}
 
+	public void onDestroy(){
+		super.onDestroy();
 	}
 
 	public void onStop(){
 		super.onStop();
-		Toast.makeText(getApplicationContext(),"On Stop",Toast.LENGTH_LONG).show();
-
 	}
 	protected void onStart() {
 		super.onStart();
-		Toast.makeText(getApplicationContext(),"on Start",Toast.LENGTH_LONG).show();
-
 		if(seriesToShow == null) {
 			//If it's null , it will look in Wikipedia
 			String urlMod;
@@ -231,10 +240,12 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 
 	@Override
 	public void onClick(View v) {
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.content_frame, FragmentYoutube.newInstance(nameTelefilm));
-		transaction.addToBackStack(null);
-		transaction.commit();
+//		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//		transaction.replace(R.id.content_frame, FragmentYoutube.newInstance(nameTelefilm));
+//		transaction.addToBackStack(null);
+//		transaction.commit();
+		BackgroundTaskYT yt = new BackgroundTaskYT(tvTitle.getText().toString(),this,this);
+		yt.execute();
 	}
 
 	public class MyButtonClickListener implements View.OnClickListener {
@@ -267,7 +278,6 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 					}
 				}
 			}
-
 	}
 
 
@@ -293,8 +303,6 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 		private String data;
 		private Boolean justDate;
 
-
-
 		public BackgroundTask(String[] xPaths, URL[] urls, Context context,Boolean isWiki,Boolean justDate) {
 			this.isWiki = isWiki;
 			this.xPath = xPaths[0];
@@ -304,8 +312,6 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 			this.justDate = justDate;
 			this.context = context;
 			flag = false;
-
-
 		}
 
 		@Override
@@ -320,16 +326,12 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 			dialog.show();
 		}
 
-
-
-
 		protected void onPostExecute(Void result) {
 			if(!justDate) {
 				if(imdbDescription != null && s.getDescription() != null) {
 					if(imdbDescription.length() < s.getDescription().length()) tvDescription.setText(s.getDescription());
 					else tvDescription.setText(imdbDescription);
 				} else tvDescription.setText(s.getDescription());
-
 				if(genreValues.equals("")) genreValues="Not available";
 				tvGenre.setText("Genre: "+genreValues);
 				if(data == null) tvNextEpisode.setText("Next Episode: not available");
@@ -370,8 +372,6 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 					for(int i = 0; i < genreList.getLength() ; i++) {
 						genreValues = genreValues+" "+genreList.item(i).getTextContent();
 					}
-
-
 				}catch (XPathExpressionException e) {
 					e.printStackTrace();
 			}
@@ -389,6 +389,95 @@ public class DetailsActivity extends FragmentActivity implements View.OnClickLis
 				else data = null;
 			}catch (XPathExpressionException e) {
 				e.printStackTrace();
+			}
+			return null;
+		}
+	}
+
+
+
+	private class BackgroundTaskYT extends AsyncTask<Void, Void, Void> {
+
+
+		private ProgressDialog dialog;
+		private String query;
+		private String resultID;
+		private Context context;
+		private  YouTube youtube;
+		public static final String YOUTUBE_API_KEY = "AIzaSyD-CnjmWIz5j4MUPavjKdW522dmUKNj15c";
+		private Activity activity;
+
+		public BackgroundTaskYT(String q,  Context context , Activity activity) {
+			query=q+" trailer";
+			this.context = context;
+			this.activity = activity;
+		}
+
+		@Override
+		protected void onPreExecute() {
+
+			dialog = new ProgressDialog(context);
+			dialog.setCancelable(true);
+			dialog.setTitle("Loading...");
+			dialog.setMessage("Loading Trailer...");
+			dialog.show();
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			dialog.dismiss();
+//			youTubePlayerFragment.startActivity(YouTubeStandalonePlayer.createVideoIntent(activity,
+//					YOUTUBE_API_KEY, resultID, 0, false, true));
+
+			startActivity(YouTubeStandalonePlayer.createVideoIntent(activity,
+					YOUTUBE_API_KEY, resultID, 0, true, true));
+//            youTubePlayerFragment.initialize(YOUTUBE_API_KEY, new YouTubePlayer.OnInitializedListener() {
+//                @Override
+//
+//                public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+//                    if (!b) {
+//                        YPlayer = youTubePlayer;
+//                        YPlayer.setFullscreenControlFlags(YouTubePlayer.FULLSCREEN_FLAG_CONTROL_ORIENTATION);
+//                        YPlayer.loadVideo(resultID);
+//                        YPlayer.play();
+//                    }
+//                }
+//
+//                @Override
+//                public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+//
+//                }
+//            });
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			try {
+				youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
+					public void initialize(HttpRequest request) throws IOException {
+					}
+				}).setApplicationName("it.unisa.gad.videotube").build();
+				YouTube.Search.List search = youtube.search().list("id,snippet");
+				String apiKey = "AIzaSyAtRsV3b_60mT9NlZ-P4XkxzE0B2eWILEI";
+				search.setKey(apiKey);
+				search.setQ(query);
+				search.setType("video");
+				search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
+				search.setMaxResults(25l);
+				SearchListResponse searchResponse = search.execute();
+				List<SearchResult> searchResultList = searchResponse.getItems();
+				Iterator<SearchResult> iterator=searchResultList.iterator();
+				SearchResult singleVideo = iterator.next();
+				ResourceId rId = singleVideo.getId();
+				resultID=rId.getVideoId();
+
+			} catch (GoogleJsonResponseException e) {
+				System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
+						+ e.getDetails().getMessage());
+			} catch (IOException e) {
+				System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
+			} catch (Throwable t) {
+				t.printStackTrace();
 			}
 			return null;
 		}
